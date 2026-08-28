@@ -1,0 +1,42 @@
+# Gradle files
+.gradle/
+build/
+*.gradle
+!build.gradle
+!settings.gradle
+.gradle-user-home/
+
+# Android Studio / IntelliJ files
+.idea/
+*.iml
+*.ipr
+*.iws
+.artifacts/
+out/
+
+# Local configuration files (contains sensitive data)
+local.properties
+# google-services.json (Comentado para permitir su subida)
+
+# Built variants and caches
+**/build/
+**/intermediates/
+**/outputs/
+**/tmp/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Captures and logs
+/captures/
+*.log
+
+# Keystores (Safety first!)
+*.jks
+*.keystore
+*.pk8
+*.pem
+
+# Kotlin related
+.kotlin/

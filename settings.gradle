@@ -1,0 +1,35 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "MotoStock"
+include ':app'
+
+// Core Modules
+include ':core:common'
+include ':core:database'
+include ':core:network'
+include ':core:domain'
+include ':core:designsystem'
+include ':data'
+
+// Feature Modules
+include ':feature:auth'
+include ':feature:inventory'
+include ':feature:appointments'
+include ':feature:history'
+include ':feature:admin'
+include ':feature:client'
+include ':feature:home'
+include ':feature:registration'

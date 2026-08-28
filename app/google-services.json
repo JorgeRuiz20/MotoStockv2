@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "433780850217",
+    "project_id": "motostock-cf16a",
+    "storage_bucket": "motostock-cf16a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433780850217:android:19313ec786518343376638",
+        "android_client_info": {
+          "package_name": "com.taller.motostock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433780850217-8jvv0h35h0cu3io7eed1poii55k8ump9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.taller.motostock",
+            "certificate_hash": "006e203eed37cb42f5aecebd05adf1517b81a768"
+          }
+        },
+        {
+          "client_id": "433780850217-mqffs4uq9upe974smrdgoct085pq9lii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnh4rujJgINRg70kV50_-tLvjfXHINRdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433780850217-mqffs4uq9upe974smrdgoct085pq9lii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

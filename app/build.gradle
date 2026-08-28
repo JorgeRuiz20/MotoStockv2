@@ -1,0 +1,129 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    id 'kotlin-kapt'
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.navigation.safeargs)
+}
+
+android {
+    namespace 'com.taller.motostock'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.taller.motostock"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
+}
+
+dependencies {
+    // Core Modules
+    implementation project(':core:common')
+    implementation project(':core:database')
+    implementation project(':core:network')
+    implementation project(':core:domain')
+    implementation project(':core:designsystem')
+    implementation project(':data')
+
+    // Feature Modules
+    implementation project(':feature:auth')
+    implementation project(':feature:inventory')
+    implementation project(':feature:appointments')
+    implementation project(':feature:history')
+    implementation project(':feature:admin')
+    implementation project(':feature:client')
+    implementation project(':feature:home')
+    implementation project(':feature:registration')
+
+    // AndroidX Core
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+
+    // Compose
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.ui
+    implementation libs.androidx.ui.tooling.preview
+    implementation libs.androidx.material3
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.runtime.compose
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.navigation.compose
+    debugImplementation libs.androidx.ui.tooling
+    debugImplementation libs.androidx.ui.test.manifest
+
+    // Room
+    implementation libs.room.runtime
+    implementation libs.room.ktx
+    kapt libs.room.compiler
+
+    // Firebase
+    implementation platform(libs.firebase.bom)
+    implementation libs.firebase.firestore.ktx
+    implementation libs.firebase.auth.ktx
+    implementation libs.firebase.analytics.ktx
+    implementation libs.firebase.messaging.ktx
+
+    // Google Sign-In
+    implementation libs.play.services.auth
+
+    // Hilt
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
+
+    // Retrofit + OkHttp
+    implementation libs.retrofit
+    implementation libs.retrofit.converter.gson
+    implementation libs.okhttp
+    implementation libs.okhttp.logging.interceptor
+
+    // Coroutines
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.kotlinx.coroutines.play.services
+
+    // Glide
+    implementation libs.glide
+
+    // Unit Testing
+    testImplementation libs.junit
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.mockito.core
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.androidx.arch.core.testing
+
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+android.defaultConfig.buildConfigField("String", "CARSXE_API_KEY", '"TU_CARSXE_API_KEY_AQUI"')
