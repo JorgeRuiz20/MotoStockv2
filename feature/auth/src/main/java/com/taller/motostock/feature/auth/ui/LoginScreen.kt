@@ -3,14 +3,26 @@ package com.taller.motostock.feature.auth.ui
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,12 +36,6 @@ import com.taller.motostock.core.designsystem.MotoStockDs
 import com.taller.motostock.core.domain.model.UserRole
 import com.taller.motostock.feature.auth.AuthContract
 import com.taller.motostock.feature.auth.viewmodel.LoginViewModel
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
 @Composable
 fun LoginScreen(
@@ -64,10 +70,8 @@ fun LoginScreen(
         }
     }
 
+    // Colectar efectos: el ViewModel ya maneja el auto-redirect desde su init{}
     LaunchedEffect(Unit) {
-        if (viewModel.haySesionActiva()) {
-            viewModel.onIntent(AuthContract.Intent.CargarRol)
-        }
         viewModel.uiEffect.collect { effect ->
             when (effect) {
                 is AuthContract.Effect.NavigateTo -> {
@@ -90,79 +94,250 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(MotoStockDs.spacing.medium),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(MotoStockDs.colors.surface)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
+            .padding(top = 48.dp, bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.Build,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MotoStockDs.colors.primary
-        )
-        Text(text = "MotoStock Taller", style = MotoStockDs.typography.h1, color = MotoStockDs.colors.primary)
-        Text(text = "Acceso de trabajadores", color = MotoStockDs.colors.secondary)
-        
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.extraLarge))
-        
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
-        
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.medium))
-        
-        Button(
-            onClick = { viewModel.onIntent(AuthContract.Intent.Login(email, password)) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading,
-            colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.secondary)
+        // Encabezado
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(bottom = 32.dp)
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(MotoStockDs.spacing.large),
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.large),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "M",
+                    style = MotoStockDs.typography.h1,
                     color = MotoStockDs.colors.onPrimary
                 )
-            } else {
-                Text("Ingresar")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "MotoStock",
+                style = MotoStockDs.typography.h1,
+                color = MotoStockDs.colors.primary,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Gestión profesional de talleres de motocicletas",
+                style = MotoStockDs.typography.bodyMedium,
+                color = MotoStockDs.colors.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+
+        // Tarjeta de Login
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
+                .padding(24.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(
+                    text = "Iniciar Sesión",
+                    style = MotoStockDs.typography.h3,
+                    color = MotoStockDs.colors.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                // Input Correo
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "Correo Electrónico",
+                        style = MotoStockDs.typography.labelMedium,
+                        color = MotoStockDs.colors.onSurfaceVariant
+                    )
+                    BasicTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
+                        decorationBox = { innerTextField ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
+                                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                            ) {
+                                if (email.isEmpty()) {
+                                    Text("correo@ejemplo.com", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
+                }
+
+                // Input Contraseña
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "Contraseña",
+                        style = MotoStockDs.typography.labelMedium,
+                        color = MotoStockDs.colors.onSurfaceVariant
+                    )
+                    BasicTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
+                        decorationBox = { innerTextField ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
+                                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                            ) {
+                                if (password.isEmpty()) {
+                                    Text("••••••••", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
+                                }
+                                innerTextField()
+                            }
+                        }
+                    )
+                }
+
+                // Botón Iniciar Sesión
+                Button(
+                    onClick = { viewModel.onIntent(AuthContract.Intent.Login(email, password)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    enabled = !state.isLoading,
+                    shape = MotoStockDs.shapes.medium,
+                    contentPadding = PaddingValues(vertical = 14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
+                    )
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MotoStockDs.colors.onPrimary
+                        )
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Text("Iniciar Sesión", style = MotoStockDs.typography.labelLarge)
+                        }
+                    }
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = MotoStockDs.colors.outlineVariant.copy(alpha = 0.3f)
+                )
+
+                // Botón Google Sign-In
+                Button(
+                    onClick = {
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            googleLauncher.launch(googleSignInClient.signInIntent)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MotoStockDs.shapes.medium,
+                    contentPadding = PaddingValues(vertical = 12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4285F4),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Icono "G" de Google con colores de la marca
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .background(Color.White, shape = MotoStockDs.shapes.full),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "G",
+                                style = MotoStockDs.typography.labelMedium,
+                                color = Color(0xFF4285F4)
+                            )
+                        }
+                        Text("Continuar con Google", style = MotoStockDs.typography.labelLarge, color = Color.White)
+                    }
+                }
+
+                // Acceso rápido de prueba (solo en debug, visualmente discreto)
+                Column(modifier = Modifier.padding(top = 8.dp)) {
+                    Text(
+                        "Acceso rápido (solo pruebas):",
+                        style = MotoStockDs.typography.bodySmall,
+                        color = MotoStockDs.colors.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        Button(
+                            onClick = { email = "cliente@motostock.com"; password = "123456" },
+                            modifier = Modifier.weight(1f),
+                            shape = MotoStockDs.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MotoStockDs.colors.surfaceContainerLow,
+                                contentColor = MotoStockDs.colors.primary
+                            ),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) { Text("Cliente", style = MotoStockDs.typography.labelSmall) }
+
+                        Button(
+                            onClick = { email = "trabajador@motostock.com"; password = "123456" },
+                            modifier = Modifier.weight(1f),
+                            shape = MotoStockDs.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MotoStockDs.colors.surfaceContainerLow,
+                                contentColor = MotoStockDs.colors.primary
+                            ),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) { Text("Trabajador", style = MotoStockDs.typography.labelSmall) }
+
+                        Button(
+                            onClick = { email = "admin@motostock.com"; password = "123456" },
+                            modifier = Modifier.weight(1f),
+                            shape = MotoStockDs.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MotoStockDs.colors.surfaceContainerLow,
+                                contentColor = MotoStockDs.colors.primary
+                            ),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) { Text("Admin", style = MotoStockDs.typography.labelSmall) }
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
-        
-        Button(
-            onClick = {
-                googleSignInClient.signOut().addOnCompleteListener {
-                    googleLauncher.launch(googleSignInClient.signInIntent)
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4))
-        ) {
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = null,
-                modifier = Modifier.size(MotoStockDs.spacing.medium),
-                tint = Color.White
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // No tienes cuenta
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                "¿No tienes una cuenta?",
+                style = MotoStockDs.typography.bodyMedium,
+                color = MotoStockDs.colors.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.width(MotoStockDs.spacing.small))
-            Text("Continuar con Google")
-        }
-        
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.medium))
-        
-        TextButton(onClick = { navController.navigate("register") }) {
-            Text("¿Nuevo trabajador? Crear cuenta", style = MotoStockDs.typography.bodyLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold))
+            Text(
+                "Regístrate",
+                style = MotoStockDs.typography.labelLarge.copy(textDecoration = TextDecoration.Underline),
+                color = MotoStockDs.colors.secondary,
+                modifier = Modifier.clickable { navController.navigate("register") }
+            )
         }
     }
 }

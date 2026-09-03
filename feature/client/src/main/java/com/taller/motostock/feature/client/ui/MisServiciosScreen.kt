@@ -2,14 +2,21 @@ package com.taller.motostock.feature.client.ui
 
 import android.app.TimePickerDialog
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,27 +49,52 @@ fun MisServiciosScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(MotoStockDs.spacing.medium)
+            .background(MotoStockDs.colors.surface)
+            .padding(16.dp)
     ) {
-        Text(
-            text = "Mis Servicios",
-            style = MotoStockDs.typography.h3,
-            color = MotoStockDs.colors.primary
-        )
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.medium))
+        // Top Header
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.full)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Atrás",
+                    tint = MotoStockDs.colors.primary
+                )
+            }
+            Text(
+                text = "Historial de Servicios",
+                style = MotoStockDs.typography.h3,
+                color = MotoStockDs.colors.primary,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
 
         if (state.misCitas.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = "Aún no tienes citas registradas",
-                    color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f),
+                    color = MotoStockDs.colors.onSurfaceVariant,
                     style = MotoStockDs.typography.bodyMedium
                 )
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(state.misCitas) { cita ->
-                    CitaClienteItem(cita, onReagendar = { showReagendarDialog = cita })
+                    CitaClienteItem(
+                        cita = cita,
+                        onReagendar = { showReagendarDialog = cita }
+                    )
                 }
             }
         }
@@ -82,68 +114,147 @@ fun MisServiciosScreen(
 
 @Composable
 fun CitaClienteItem(cita: Cita, onReagendar: () -> Unit) {
-    val fmt = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(MotoStockDs.elevation.small),
-        shape = MotoStockDs.shapes.medium
+    val fmt = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+    val statusBg = when (cita.estado) {
+        EstadoCita.FINALIZADO -> Color(0xFFE8F5E9)
+        EstadoCita.PENDIENTE -> Color(0xFFFFF3E0)
+        EstadoCita.EN_PROCESO, EstadoCita.ACEPTADA -> Color(0xFFE8F0FE)
+        EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.errorContainer
+    }
+
+    val statusText = when (cita.estado) {
+        EstadoCita.FINALIZADO -> MotoStockDs.colors.success
+        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.EN_PROCESO, EstadoCita.ACEPTADA -> MotoStockDs.colors.primary
+        EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.onErrorContainer
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(1.dp, shape = MotoStockDs.shapes.medium)
+            .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(MotoStockDs.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.extraSmall)
-        ) {
-            Text(
-                text = "Moto: ${cita.modelo} (${cita.placa})",
-                style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary
-            )
-            Text(
-                text = "Fecha: ${fmt.format(Date(cita.fechaIngreso))} ${cita.horaIngreso}",
-                style = MotoStockDs.typography.bodySmall,
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f)
-            )
-            Text(
-                text = "Servicio: ${cita.tipoServicio}",
-                style = MotoStockDs.typography.bodyMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MotoStockDs.colors.onSurface
-            )
-            
-            val statusColor = when (cita.estado) {
-                EstadoCita.PENDIENTE -> Color(0xFFF57C00)
-                EstadoCita.ACEPTADA, EstadoCita.FINALIZADO -> MotoStockDs.colors.success
-                EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.error
-                EstadoCita.EN_PROCESO -> MotoStockDs.colors.secondary
-            }
-            Text(
-                text = "Estado: ${cita.estado.label}",
-                color = statusColor,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                style = MotoStockDs.typography.bodyMedium
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Header: Badge de estado y Fecha
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(statusBg, shape = MotoStockDs.shapes.full)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (cita.estado == EstadoCita.FINALIZADO) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = statusText
+                            )
+                        }
+                        Text(
+                            text = cita.estado.label,
+                            style = MotoStockDs.typography.labelSmall,
+                            color = statusText
+                        )
+                    }
+                }
 
-            if (cita.motivoRechazo.isNotEmpty()) {
                 Text(
-                    text = "Motivo Rechazo: ${cita.motivoRechazo}",
-                    color = MotoStockDs.colors.error,
-                    style = MotoStockDs.typography.bodySmall
-                )
-            }
-            if (cita.motivoCancelacion.isNotEmpty()) {
-                Text(
-                    text = "Motivo Cancelación: ${cita.motivoCancelacion}",
-                    color = MotoStockDs.colors.error,
-                    style = MotoStockDs.typography.bodySmall
+                    text = fmt.format(Date(cita.fechaIngreso)),
+                    style = MotoStockDs.typography.bodySmall,
+                    color = MotoStockDs.colors.onSurfaceVariant
                 )
             }
 
+            // Título, Moto y Costo
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                    Text(
+                        text = cita.tipoServicio.ifEmpty { "Mantenimiento General" },
+                        style = MotoStockDs.typography.h3,
+                        color = MotoStockDs.colors.primary
+                    )
+                    Text(
+                        text = "${cita.modelo.ifEmpty { "Moto" }} • ${cita.placa}",
+                        style = MotoStockDs.typography.bodySmall,
+                        color = MotoStockDs.colors.onSurfaceVariant
+                    )
+                }
+
+                if (cita.costoServicio > 0) {
+                    Text(
+                        text = "S/. ${String.format("%.2f", cita.costoServicio)}",
+                        style = MotoStockDs.typography.h2,
+                        color = MotoStockDs.colors.secondary
+                    )
+                }
+            }
+
+            // Contenedor de detalles
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
+                    .padding(12.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (cita.descripcion.isNotBlank()) {
+                        Text(
+                            text = "Descripción: ${cita.descripcion}",
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.onSurfaceVariant
+                        )
+                    }
+                    if (cita.horaDeseada.isNotBlank()) {
+                        Text(
+                            text = "Horario preferido: ${cita.horaDeseada}",
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.onSurfaceVariant
+                        )
+                    }
+                    if (cita.motivoRechazo.isNotBlank()) {
+                        Text(
+                            text = "Motivo de rechazo: ${cita.motivoRechazo}",
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.error
+                        )
+                    }
+                    if (cita.motivoCancelacion.isNotBlank()) {
+                        Text(
+                            text = "Motivo de cancelación: ${cita.motivoCancelacion}",
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.error
+                        )
+                    }
+                }
+            }
+
+            // Botón Reagendar si fue rechazada o cancelada
             if (cita.estado == EstadoCita.RECHAZADA || cita.estado == EstadoCita.CANCELADA) {
                 Button(
                     onClick = onReagendar,
-                    modifier = Modifier.padding(top = MotoStockDs.spacing.small),
-                    colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.primary)
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MotoStockDs.shapes.small,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
+                    )
                 ) {
-                    Text("Reagendar cita")
+                    Text("Reagendar cita", style = MotoStockDs.typography.labelMedium)
                 }
             }
         }
@@ -173,30 +284,42 @@ fun ReagendarDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MotoStockDs.colors.surfaceContainerLowest,
+        titleContentColor = MotoStockDs.colors.primary,
         title = { Text("Reagendar cita - ${cita.placa}", style = MotoStockDs.typography.h3) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     "Se enviará una nueva solicitud para la placa ${cita.placa}",
-                    style = MotoStockDs.typography.bodyMedium
+                    style = MotoStockDs.typography.bodyMedium,
+                    color = MotoStockDs.colors.onSurfaceVariant
                 )
                 OutlinedTextField(
                     value = descripcion,
                     onValueChange = { descripcion = it },
                     label = { Text("Descripción adicional") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MotoStockDs.shapes.small
                 )
-                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
-                        text = "Hora: ${if (horaSeleccionada.isEmpty()) "No seleccionada" else horaSeleccionada}",
-                        modifier = Modifier.weight(1f),
-                        style = MotoStockDs.typography.bodyMedium
+                        text = "Hora: ${if (horaSeleccionada.isEmpty()) "Sin seleccionar" else horaSeleccionada}",
+                        style = MotoStockDs.typography.bodyMedium,
+                        color = MotoStockDs.colors.onSurface
                     )
                     Button(
                         onClick = { timePickerDialog.show() },
-                        colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.secondary)
+                        shape = MotoStockDs.shapes.small,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MotoStockDs.colors.secondaryContainer,
+                            contentColor = MotoStockDs.colors.onSecondaryContainer
+                        )
                     ) {
-                        Text("Seleccionar hora")
+                        Text("Hora", style = MotoStockDs.typography.labelSmall)
                     }
                 }
             }
@@ -204,14 +327,18 @@ fun ReagendarDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(descripcion, horaSeleccionada) },
-                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.primary)
-            ) { 
-                Text("Reagendar") 
+                shape = MotoStockDs.shapes.small,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MotoStockDs.colors.primary,
+                    contentColor = MotoStockDs.colors.onPrimary
+                )
+            ) {
+                Text("Reagendar", style = MotoStockDs.typography.labelMedium)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { 
-                Text("Cancelar", color = MotoStockDs.colors.secondary) 
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
             }
         }
     )

@@ -1,16 +1,24 @@
 package com.taller.motostock.feature.history.ui
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,7 +31,6 @@ import org.json.JSONArray
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HistorialScreen(
@@ -36,13 +43,12 @@ fun HistorialScreen(
     var filterLabel by remember { mutableStateOf("") }
 
     val cal = Calendar.getInstance()
-    val fmt = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val fmt = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { effect ->
             when (effect) {
                 is AtencionesHistorialContract.Effect.ShowMessage -> {
-                    // Aquí podrías usar un SnackbarHostState si estuviera disponible en el Scaffold
                     android.widget.Toast.makeText(context, effect.message, android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
@@ -52,87 +58,40 @@ fun HistorialScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(MotoStockDs.spacing.medium)
+            .background(MotoStockDs.colors.surface)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        Text(
-            text = "Historial de atenciones",
-            style = MotoStockDs.typography.h3,
-            color = MotoStockDs.colors.primary
-        )
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
-
+        // Top Header
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)
+            modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                label = { Text("Buscar por placa") },
-                modifier = Modifier.weight(1f),
-                trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-            )
-            Button(
-                onClick = { viewModel.onIntent(AtencionesHistorialContract.Intent.BuscarPorPlaca(query)) },
-                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.primary)
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.full)
             ) {
-                Text("Buscar")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás", tint = MotoStockDs.colors.primary)
             }
-        }
-        
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)
-        ) {
-            Button(
-                onClick = {
-                    DatePickerDialog(context, { _, y, m, d ->
-                        cal.set(y, m, d, 0, 0, 0)
-                        val inicio = cal.timeInMillis
-                        val inicioStr = fmt.format(cal.time)
-
-                        DatePickerDialog(context, { _, y2, m2, d2 ->
-                            val cal2 = Calendar.getInstance()
-                            cal2.set(y2, m2, d2, 23, 59, 59)
-                            val fin = cal2.timeInMillis
-                            val finStr = fmt.format(cal2.time)
-
-                            filterLabel = "$inicioStr - $finStr"
-                            viewModel.onIntent(AtencionesHistorialContract.Intent.FiltrarPorFecha(inicio, fin))
-                        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
-                    }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
-                },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.secondary)
-            ) {
-                Icon(Icons.Default.DateRange, contentDescription = null)
-                Spacer(modifier = Modifier.width(MotoStockDs.spacing.extraSmall))
-                Text("Filtrar por fecha", style = MotoStockDs.typography.labelSmall)
-            }
-            
-            if (filterLabel.isNotEmpty()) {
-                TextButton(onClick = {
-                    filterLabel = ""
-                    query = ""
-                    viewModel.onIntent(AtencionesHistorialContract.Intent.LimpiarFiltro)
-                }) {
-                    Text("✖ Limpiar", color = MotoStockDs.colors.error)
-                }
-            }
-        }
-
-        if (filterLabel.isNotEmpty()) {
             Text(
-                text = "Filtro: $filterLabel",
-                style = MotoStockDs.typography.bodySmall,
+                text = "Historial de Servicios",
+                style = MotoStockDs.typography.h3,
                 color = MotoStockDs.colors.primary,
-                modifier = Modifier.padding(vertical = MotoStockDs.spacing.extraSmall)
+                modifier = Modifier.padding(start = 16.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
+        // Filtro Simplificado para el UI HTML, que solo muestra listado limpio.
+        // Ocultaré el input nativo de placa para acercarme a "#view-servicios" que asume un cliente
+        // Si quieres que el trabajador siga buscando, lo dejamos
+        /*Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+           // BasicTextField si se quiere buscar...
+        }*/
 
         if (state.atenciones.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -143,7 +102,7 @@ fun HistorialScreen(
                 )
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(state.atenciones) { cita ->
                     HistorialItem(cita)
                 }
@@ -156,7 +115,7 @@ data class RepuestoDisplay(val nombre: String, val cantidad: Int, val precio: Do
 
 @Composable
 fun HistorialItem(cita: Cita) {
-    val fmtFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val fmtFecha = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     val currency = NumberFormat.getCurrencyInstance(Locale("es", "PE"))
 
     val repuestosList = remember(cita.repuestosUsadosJson) {
@@ -175,112 +134,81 @@ fun HistorialItem(cita: Cita) {
                     )
                 }
             } catch (e: Exception) {
-                // Error parsing JSON
             }
         }
         list
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(MotoStockDs.elevation.small),
-        shape = MotoStockDs.shapes.medium
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(MotoStockDs.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.extraSmall)
-        ) {
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            
+            // Etiqueta y Fecha
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.background(Color(0xFFE8F5E9), shape = MotoStockDs.shapes.full).padding(horizontal = 10.dp, vertical = 4.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(14.dp), tint = MotoStockDs.colors.success)
+                        Text("Finalizado", style = MotoStockDs.typography.labelSmall, color = MotoStockDs.colors.success)
+                    }
+                }
                 Text(
-                    text = cita.placa,
-                    style = MotoStockDs.typography.h2,
-                    color = MotoStockDs.colors.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                )
-                Text(
-                    text = "✓ FINALIZADO",
-                    style = MotoStockDs.typography.labelMedium,
-                    color = MotoStockDs.colors.success,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                )
-            }
-            Text(
-                text = cita.propietario.ifEmpty { "Sin nombre" },
-                style = MotoStockDs.typography.bodyLarge,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MotoStockDs.colors.onSurface
-            )
-            Text(
-                text = "Modelo: ${cita.modelo.ifEmpty { "No especificado" }}",
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.7f),
-                style = MotoStockDs.typography.bodySmall
-            )
-            if (cita.telefono.isNotBlank()) {
-                Text(
-                    text = "Tel: ${cita.telefono}",
-                    style = MotoStockDs.typography.bodySmall,
-                    color = MotoStockDs.colors.onSurface
-                )
-            }
-            Text(
-                text = cita.tipoServicio,
-                style = MotoStockDs.typography.bodyMedium,
-                color = MotoStockDs.colors.primary,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-            )
-            if (cita.descripcion.isNotBlank()) {
-                Text(
-                    text = cita.descripcion,
-                    style = MotoStockDs.typography.bodySmall,
-                    color = MotoStockDs.colors.onSurface
+                    text = cita.fechaSalida?.let { fmtFecha.format(Date(it)) } ?: fmtFecha.format(Date(cita.fechaIngreso)), 
+                    style = MotoStockDs.typography.bodySmall, 
+                    color = MotoStockDs.colors.onSurfaceVariant
                 )
             }
             
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = MotoStockDs.spacing.small),
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.12f)
-            )
-            
-            Text(
-                text = "🟢 Ingreso: ${fmtFecha.format(Date(cita.fechaIngreso))} ${cita.horaIngreso}",
-                style = MotoStockDs.typography.labelSmall,
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f)
-            )
-            val fechaSalida = cita.fechaSalida
-            if (fechaSalida != null) {
-                Text(
-                    text = "🔴 Salida: ${fmtFecha.format(Date(fechaSalida))} ${cita.horaSalida}",
-                    style = MotoStockDs.typography.labelSmall,
-                    color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f)
-                )
-            }
-
-            if (repuestosList.isNotEmpty() || cita.costoServicio > 0) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = MotoStockDs.spacing.small),
-                    color = MotoStockDs.colors.onSurface.copy(alpha = 0.12f)
-                )
-                Text(
-                    text = "🛠️ Productos utilizados:",
-                    style = MotoStockDs.typography.labelMedium,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = MotoStockDs.colors.primary
-                )
-                
-                repuestosList.forEach { item ->
+            // Título, Modelo, Precio
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
+                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                    Text(text = cita.tipoServicio.ifEmpty { "Servicio de Mantenimiento" }, style = MotoStockDs.typography.h3, color = MotoStockDs.colors.primary)
                     Text(
-                        text = "• ${item.nombre} x${item.cantidad} (${currency.format(item.precio)} c/u)",
-                        style = MotoStockDs.typography.labelSmall,
-                        color = MotoStockDs.colors.onSurface.copy(alpha = 0.7f)
+                        text = "${cita.modelo.ifEmpty { "Desconocido" }} • ${cita.placa}",
+                        style = MotoStockDs.typography.bodySmall,
+                        color = MotoStockDs.colors.onSurfaceVariant
                     )
                 }
-                
                 Text(
-                    text = "💰 Costo total: ${currency.format(cita.costoServicio)}",
-                    style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.primary,
-                    modifier = Modifier.padding(top = MotoStockDs.spacing.extraSmall)
+                    text = currency.format(cita.costoServicio),
+                    style = MotoStockDs.typography.h2,
+                    color = MotoStockDs.colors.secondary
                 )
+            }
+            
+            // Detalles Repuestos / Mano de obra
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
+                    .padding(12.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (repuestosList.isNotEmpty()) {
+                        val nombres = repuestosList.joinToString(", ") { it.nombre }
+                        Text(
+                            text = "Repuestos:",
+                            style = MotoStockDs.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MotoStockDs.colors.onSurfaceVariant
+                        )
+                        Text(text = nombres, style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
+                    } else {
+                        Text("Sin repuestos registrados", style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
+                    }
+                    
+                    if (cita.descripcion.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Descripción:",
+                            style = MotoStockDs.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MotoStockDs.colors.onSurfaceVariant
+                        )
+                        Text(text = cita.descripcion, style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
+                    }
+                }
             }
         }
     }

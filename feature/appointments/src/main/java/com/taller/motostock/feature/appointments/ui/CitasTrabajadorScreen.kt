@@ -1,14 +1,27 @@
 package com.taller.motostock.feature.appointments.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +29,7 @@ import androidx.navigation.NavController
 import com.taller.motostock.core.designsystem.MotoStockDs
 import com.taller.motostock.core.domain.model.Cita
 import com.taller.motostock.core.domain.model.EstadoCita
+import com.taller.motostock.core.domain.model.Repuesto
 import com.taller.motostock.feature.appointments.CitasContract
 import com.taller.motostock.feature.appointments.viewmodel.CitasViewModel
 import java.text.SimpleDateFormat
@@ -29,7 +43,7 @@ fun CitasTrabajadorScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Pendientes", "Aceptadas / En proceso")
+    val tabs = listOf("Todas", "Pendientes", "En Proceso")
 
     var showRejectDialog by remember { mutableStateOf<Cita?>(null) }
     var showCancelDialog by remember { mutableStateOf<Cita?>(null) }
@@ -43,40 +57,122 @@ fun CitasTrabajadorScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(
-            selectedTabIndex = selectedTab,
-            containerColor = MotoStockDs.colors.surface,
-            contentColor = MotoStockDs.colors.primary
+    val currentList = when (selectedTab) {
+        1 -> state.pendientes
+        2 -> state.activas
+        else -> state.pendientes + state.activas
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MotoStockDs.colors.surface)
+            .padding(16.dp)
+    ) {
+        // Encabezado superior con botón volver y agregar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title, style = MotoStockDs.typography.labelLarge) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.full)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Atrás",
+                        tint = MotoStockDs.colors.primary
+                    )
+                }
+                Text(
+                    text = "Gestión de Citas",
+                    style = MotoStockDs.typography.h3,
+                    color = MotoStockDs.colors.primary,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+
+            IconButton(
+                onClick = { navController.navigate("agendar_cita") },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.full)
+                    .shadow(2.dp, shape = MotoStockDs.shapes.full)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agendar Cita",
+                    tint = MotoStockDs.colors.onPrimary
                 )
             }
         }
 
-        val currentList = if (selectedTab == 0) state.pendientes else state.activas
+        // Selector segmentado tipo pastilla (Filter segment)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MotoStockDs.colors.surfaceContainer, shape = MotoStockDs.shapes.medium)
+                .padding(4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    val isSelected = selectedTab == index
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .then(
+                                if (isSelected) {
+                                    Modifier
+                                        .shadow(1.dp, shape = MotoStockDs.shapes.small)
+                                        .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.small)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .clickable { selectedTab = index }
+                            .padding(vertical = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = title,
+                            style = MotoStockDs.typography.labelMedium,
+                            color = if (isSelected) MotoStockDs.colors.primary else MotoStockDs.colors.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (currentList.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = if (selectedTab == 0) "No hay citas pendientes" else "No hay citas aceptadas o en proceso",
+                    text = when (selectedTab) {
+                        1 -> "No hay citas pendientes"
+                        2 -> "No hay citas en proceso"
+                        else -> "No hay citas registradas"
+                    },
                     style = MotoStockDs.typography.bodyMedium,
-                    color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f)
+                    color = MotoStockDs.colors.onSurfaceVariant
                 )
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(MotoStockDs.spacing.small),
-                verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(currentList) { cita ->
                     CitaItem(
@@ -95,7 +191,7 @@ fun CitasTrabajadorScreen(
     if (showRejectDialog != null) {
         MotivoDialog(
             title = "Rechazar cita",
-            message = "Placa: ${showRejectDialog!!.placa}\n${showRejectDialog!!.propietario}",
+            message = "Placa: ${showRejectDialog!!.placa}\nCliente: ${showRejectDialog!!.propietario}",
             onDismiss = { showRejectDialog = null },
             onConfirm = { motivo ->
                 viewModel.onIntent(CitasContract.Intent.Rechazar(showRejectDialog!!, motivo))
@@ -107,7 +203,7 @@ fun CitasTrabajadorScreen(
     if (showCancelDialog != null) {
         MotivoDialog(
             title = "Cancelar cita",
-            message = "Placa: ${showCancelDialog!!.placa}\n${showCancelDialog!!.propietario}",
+            message = "Placa: ${showCancelDialog!!.placa}\nCliente: ${showCancelDialog!!.propietario}",
             onDismiss = { showCancelDialog = null },
             onConfirm = { motivo ->
                 viewModel.onIntent(CitasContract.Intent.Cancelar(showCancelDialog!!, motivo))
@@ -138,120 +234,263 @@ fun CitaItem(
     onFinalizar: () -> Unit,
     onCancelar: () -> Unit
 ) {
-    val fmt = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(MotoStockDs.elevation.small),
-        shape = MotoStockDs.shapes.medium
-    ) {
-        Column(
-            modifier = Modifier.padding(MotoStockDs.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.extraSmall)
-        ) {
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = cita.placa,
-                    style = MotoStockDs.typography.h2,
-                    color = MotoStockDs.colors.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                )
-                Text(
-                    text = if (cita.estado == EstadoCita.PENDIENTE) "⏳ Pendiente" else if (cita.estado == EstadoCita.EN_PROCESO) "🛠️ En proceso" else "✅ Aceptada",
-                    style = MotoStockDs.typography.labelMedium,
-                    color = if (cita.estado == EstadoCita.PENDIENTE) Color(0xFFF57C00) else if (cita.estado == EstadoCita.EN_PROCESO) MotoStockDs.colors.secondary else MotoStockDs.colors.success
-                )
-            }
-            Text(
-                text = cita.propietario.ifEmpty { "Sin nombre" },
-                style = MotoStockDs.typography.bodyLarge,
-                color = MotoStockDs.colors.onSurface
-            )
-            Text(
-                text = "Modelo: ${cita.modelo.ifEmpty { "No especificado" }}",
-                style = MotoStockDs.typography.bodySmall,
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.7f)
-            )
-            if (cita.telefono.isNotBlank()) {
-                Text(
-                    text = "Tel: ${cita.telefono}",
-                    style = MotoStockDs.typography.bodySmall,
-                    color = MotoStockDs.colors.onSurface
-                )
-            }
-            Text(
-                text = cita.tipoServicio,
-                style = MotoStockDs.typography.bodyMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MotoStockDs.colors.primary
-            )
-            if (cita.descripcion.isNotBlank()) {
-                Text(
-                    text = cita.descripcion,
-                    style = MotoStockDs.typography.bodySmall,
-                    color = MotoStockDs.colors.onSurface
-                )
-            }
-            Text(
-                text = "Ingreso: ${fmt.format(Date(cita.fechaIngreso))} ${cita.horaIngreso}",
-                style = MotoStockDs.typography.labelSmall,
-                color = MotoStockDs.colors.onSurface.copy(alpha = 0.6f)
-            )
-            
-            if (cita.horaDeseada.isNotBlank()) {
-                Text(
-                    text = "⏰ Hora deseada: ${cita.horaDeseada}",
-                    style = MotoStockDs.typography.labelSmall,
-                    color = MotoStockDs.colors.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                )
-            }
+    val fmt = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
+    val borderAccentColor = when (cita.estado) {
+        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.ACEPTADA -> MotoStockDs.colors.primary
+        EstadoCita.EN_PROCESO -> MotoStockDs.colors.secondaryContainer
+        EstadoCita.FINALIZADO -> MotoStockDs.colors.success
+        EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.error
+    }
 
-            Spacer(modifier = Modifier.height(MotoStockDs.spacing.small))
-            
-            if (cita.estado == EstadoCita.PENDIENTE) {
-                Row(horizontalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
-                    Button(
-                        onClick = onAceptar,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.success)
+    val statusBg = when (cita.estado) {
+        EstadoCita.PENDIENTE -> Color(0xFFFFF3E0)
+        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> Color(0xFFE8F0FE)
+        EstadoCita.FINALIZADO -> Color(0xFFE8F5E9)
+        EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.errorContainer
+    }
+
+    val statusText = when (cita.estado) {
+        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> MotoStockDs.colors.primary
+        EstadoCita.FINALIZADO -> MotoStockDs.colors.success
+        EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.onErrorContainer
+    }
+
+    val statusLabel = when (cita.estado) {
+        EstadoCita.PENDIENTE -> "Pendiente"
+        EstadoCita.ACEPTADA -> "Aceptada"
+        EstadoCita.EN_PROCESO -> "En Proceso"
+        EstadoCita.FINALIZADO -> "Finalizado"
+        EstadoCita.RECHAZADA -> "Rechazada"
+        EstadoCita.CANCELADA -> "Cancelada"
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(1.dp, shape = MotoStockDs.shapes.medium)
+            .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            // Acento lateral de color (border-l-4)
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .defaultMinSize(minHeight = 120.dp)
+                    .background(borderAccentColor)
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Header: Badge de estado y Hora
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(statusBg, shape = MotoStockDs.shapes.full)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
-                        Text("Aceptar")
+                        Text(
+                            text = statusLabel,
+                            style = MotoStockDs.typography.labelSmall,
+                            color = statusText
+                        )
                     }
-                    Button(
-                        onClick = onRechazar,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.error)
-                    ) {
-                        Text("Rechazar")
+
+                    val fechaTexto = if (cita.horaDeseada.isNotBlank()) {
+                        "Hora deseada: ${cita.horaDeseada}"
+                    } else {
+                        fmt.format(Date(cita.fechaIngreso))
+                    }
+                    Text(
+                        text = fechaTexto,
+                        style = MotoStockDs.typography.bodySmall,
+                        color = MotoStockDs.colors.onSurfaceVariant
+                    )
+                }
+
+                // Moto y Cliente
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    val motoTitle = if (cita.modelo.isNotBlank()) {
+                        "${cita.modelo} (${cita.placa})"
+                    } else {
+                        "Placa: ${cita.placa}"
+                    }
+                    Text(
+                        text = motoTitle,
+                        style = MotoStockDs.typography.h3,
+                        color = MotoStockDs.colors.primary
+                    )
+                    Text(
+                        text = "Cliente: ${cita.propietario.ifEmpty { "Sin registrar" }} • ${cita.tipoServicio}",
+                        style = MotoStockDs.typography.bodySmall,
+                        color = MotoStockDs.colors.onSurfaceVariant
+                    )
+                    if (cita.descripcion.isNotBlank()) {
+                        Text(
+                            text = cita.descripcion,
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.8f)
+                        )
+                    }
+                    if (cita.motivoRechazo.isNotBlank()) {
+                        Text(
+                            text = "Motivo: ${cita.motivoRechazo}",
+                            style = MotoStockDs.typography.bodySmall,
+                            color = MotoStockDs.colors.error
+                        )
                     }
                 }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
-                        if (cita.estado != EstadoCita.EN_PROCESO) {
+
+                // Botones de acción según el estado
+                when (cita.estado) {
+                    EstadoCita.PENDIENTE -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Button(
-                                onClick = onPonerEnProceso,
+                                onClick = onAceptar,
                                 modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.secondary)
+                                shape = MotoStockDs.shapes.small,
+                                contentPadding = PaddingValues(vertical = 10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MotoStockDs.colors.secondary,
+                                    contentColor = MotoStockDs.colors.onSecondary
+                                )
                             ) {
-                                Text("En proceso")
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text("Aceptar", style = MotoStockDs.typography.labelMedium)
+                                }
+                            }
+
+                            Button(
+                                onClick = onRechazar,
+                                modifier = Modifier.weight(1f),
+                                shape = MotoStockDs.shapes.small,
+                                contentPadding = PaddingValues(vertical = 10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MotoStockDs.colors.errorContainer,
+                                    contentColor = MotoStockDs.colors.onErrorContainer
+                                )
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text("Rechazar", style = MotoStockDs.typography.labelMedium)
+                                }
                             }
                         }
-                        Button(
-                            onClick = onFinalizar,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.success)
+                    }
+
+                    EstadoCita.ACEPTADA -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Text("Finalizar")
+                            Button(
+                                onClick = onPonerEnProceso,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MotoStockDs.shapes.small,
+                                contentPadding = PaddingValues(vertical = 10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MotoStockDs.colors.primary,
+                                    contentColor = MotoStockDs.colors.onPrimary
+                                )
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Text("Iniciar Trabajo", style = MotoStockDs.typography.labelMedium)
+                                }
+                            }
+                            Text(
+                                text = "Cancelar cita",
+                                style = MotoStockDs.typography.labelSmall,
+                                color = MotoStockDs.colors.error,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .clickable { onCancelar() }
+                                    .padding(vertical = 4.dp)
+                            )
                         }
                     }
-                    OutlinedButton(
-                        onClick = onCancelar,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MotoStockDs.colors.error)
-                    ) {
-                        Text("Cancelar cita")
+
+                    EstadoCita.EN_PROCESO -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Button(
+                                onClick = onFinalizar,
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MotoStockDs.shapes.small,
+                                contentPadding = PaddingValues(vertical = 10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MotoStockDs.colors.secondary,
+                                    contentColor = MotoStockDs.colors.onSecondary
+                                )
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Text("Finalizar Servicio", style = MotoStockDs.typography.labelMedium)
+                                }
+                            }
+                            Text(
+                                text = "Cancelar cita",
+                                style = MotoStockDs.typography.labelSmall,
+                                color = MotoStockDs.colors.error,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .clickable { onCancelar() }
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
                     }
+
+                    else -> {}
                 }
             }
         }
@@ -268,29 +507,36 @@ fun MotivoDialog(
     var motivo by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MotoStockDs.colors.surfaceContainerLowest,
+        titleContentColor = MotoStockDs.colors.primary,
         title = { Text(title, style = MotoStockDs.typography.h3) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
-                Text(message, style = MotoStockDs.typography.bodyMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(message, style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant)
                 OutlinedTextField(
                     value = motivo,
                     onValueChange = { motivo = it },
                     label = { Text("Motivo") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MotoStockDs.shapes.small
                 )
             }
         },
         confirmButton = {
             Button(
                 onClick = { onConfirm(motivo) },
-                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.primary)
-            ) { 
-                Text("Confirmar") 
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MotoStockDs.colors.primary,
+                    contentColor = MotoStockDs.colors.onPrimary
+                ),
+                shape = MotoStockDs.shapes.small
+            ) {
+                Text("Confirmar", style = MotoStockDs.typography.labelMedium)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { 
-                Text("Cancelar", color = MotoStockDs.colors.secondary) 
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
             }
         }
     )
@@ -299,38 +545,55 @@ fun MotivoDialog(
 @Composable
 private fun FinalizarServicioDialog(
     cita: Cita,
-    repuestosDisponibles: List<com.taller.motostock.core.domain.model.Repuesto>,
+    repuestosDisponibles: List<Repuesto>,
     onDismiss: () -> Unit,
-    onConfirm: (List<Pair<com.taller.motostock.core.domain.model.Repuesto, Int>>, Double) -> Unit
+    onConfirm: (List<Pair<Repuesto, Int>>, Double) -> Unit
 ) {
     var costo by remember { mutableStateOf("") }
     val seleccionados = remember { mutableStateMapOf<String, Int>() }
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MotoStockDs.colors.surfaceContainerLowest,
+        titleContentColor = MotoStockDs.colors.primary,
         title = { Text("Finalizar servicio - ${cita.placa}", style = MotoStockDs.typography.h3) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(MotoStockDs.spacing.small)) {
-                Text("Selecciona los productos utilizados:", style = MotoStockDs.typography.bodyMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Selecciona los productos utilizados:", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant)
                 LazyColumn(modifier = Modifier.heightIn(max = 200.dp)) {
                     items(repuestosDisponibles) { repuesto ->
                         val cantidad = seleccionados[repuesto.id] ?: 0
-                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
                             Checkbox(
                                 checked = cantidad > 0,
                                 onCheckedChange = { checked ->
                                     if (checked) seleccionados[repuesto.id] = 1 else seleccionados.remove(repuesto.id)
-                                }
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = MotoStockDs.colors.primary,
+                                    checkmarkColor = MotoStockDs.colors.onPrimary
+                                )
                             )
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(repuesto.nombre, style = MotoStockDs.typography.bodyMedium)
-                                Text("Stock: ${repuesto.cantidad}", style = MotoStockDs.typography.bodySmall)
+                                Text(repuesto.nombre, style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurface)
+                                Text("Stock: ${repuesto.cantidad} | S/. ${String.format("%.2f", repuesto.precioVenta)}", style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
                             }
                             if (cantidad > 0) {
-                                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                                    IconButton(onClick = { if (cantidad > 1) seleccionados[repuesto.id] = cantidad - 1 }) { Text("-") }
-                                    Text(cantidad.toString())
-                                    IconButton(onClick = { if (cantidad < repuesto.cantidad) seleccionados[repuesto.id] = cantidad + 1 }) { Text("+") }
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(
+                                        onClick = { if (cantidad > 1) seleccionados[repuesto.id] = cantidad - 1 },
+                                        modifier = Modifier.size(28.dp)
+                                    ) { Text("-", style = MotoStockDs.typography.labelLarge) }
+                                    Text(cantidad.toString(), style = MotoStockDs.typography.labelMedium, modifier = Modifier.padding(horizontal = 4.dp))
+                                    IconButton(
+                                        onClick = { if (cantidad < repuesto.cantidad) seleccionados[repuesto.id] = cantidad + 1 },
+                                        modifier = Modifier.size(28.dp)
+                                    ) { Text("+", style = MotoStockDs.typography.labelLarge) }
                                 }
                             }
                         }
@@ -339,18 +602,30 @@ private fun FinalizarServicioDialog(
                 OutlinedTextField(
                     value = costo,
                     onValueChange = { costo = it },
-                    label = { Text("Costo total (S/)") },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text("Costo mano de obra / total (S/.)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MotoStockDs.shapes.small
                 )
             }
         },
         confirmButton = {
-            Button(onClick = {
-                val items = repuestosDisponibles.filter { seleccionados.containsKey(it.id) }
-                    .map { it to (seleccionados[it.id] ?: 1) }
-                onConfirm(items, costo.toDoubleOrNull() ?: 0.0)
-            }) { Text("Confirmar") }
+            Button(
+                onClick = {
+                    val items = repuestosDisponibles.filter { seleccionados.containsKey(it.id) }
+                        .map { it to (seleccionados[it.id] ?: 1) }
+                    onConfirm(items, costo.toDoubleOrNull() ?: 0.0)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MotoStockDs.colors.secondary,
+                    contentColor = MotoStockDs.colors.onSecondary
+                ),
+                shape = MotoStockDs.shapes.small
+            ) { Text("Confirmar y Finalizar", style = MotoStockDs.typography.labelMedium) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
+            }
+        }
     )
 }

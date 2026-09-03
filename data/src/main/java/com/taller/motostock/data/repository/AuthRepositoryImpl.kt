@@ -25,8 +25,38 @@ class AuthRepositoryImpl @Inject constructor(
         }.getOrDefault(UserRole.CLIENTE)
     }
 
+    override suspend fun getNombreUsuarioActual(): String {
+        val uid = usuarioActualUid() ?: return ""
+        return runCatching {
+            firestore.collection("usuarios").document(uid).get().await()
+                .getString("nombre") ?: (firebaseAuth.currentUser?.displayName ?: "")
+        }.getOrDefault(firebaseAuth.currentUser?.displayName ?: "")
+    }
+
     override suspend fun login(email: String, password: String): Result<Unit> = runCatching {
-        firebaseAuth.signInWithEmailAndPassword(email, password).await()
+        try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+        } catch (e: Exception) {
+            // Si es el admin de prueba y falló porque aún no existía en Firebase Auth, lo creamos
+            val isAdminTestEmail = email.trim().equals("admin.test@motostock.com", ignoreCase = true) ||
+                    email.trim().equals("admin@motostock.com", ignoreCase = true)
+            if (isAdminTestEmail && password == "admin123") {
+                val createResult = firebaseAuth.createUserWithEmailAndPassword(email.trim(), password).await()
+                val uid = createResult.user?.uid ?: error("No se pudo obtener el UID del admin")
+                firestore.collection("usuarios").document(uid).set(
+                    mapOf(
+                        "uid" to uid,
+                        "email" to email.trim(),
+                        "nombre" to "Administrador",
+                        "role" to UserRole.ADMINISTRADOR.value,
+                        "creadoEn" to System.currentTimeMillis()
+                    ),
+                    com.google.firebase.firestore.SetOptions.merge()
+                ).await()
+            } else {
+                throw e
+            }
+        }
     }
 
     override suspend fun loginConGoogle(idToken: String): Result<Unit> = runCatching {

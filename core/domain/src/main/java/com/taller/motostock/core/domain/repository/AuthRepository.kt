@@ -7,6 +7,7 @@ interface AuthRepository {
     fun usuarioActualUid(): String?
     fun haySesionActiva(): Boolean
     suspend fun getRolUsuarioActual(): UserRole
+    suspend fun getNombreUsuarioActual(): String
     suspend fun login(email: String, password: String): Result<Unit>
     suspend fun loginConGoogle(idToken: String): Result<Unit>
     /** Registro público: siempre crea un CLIENTE. */
