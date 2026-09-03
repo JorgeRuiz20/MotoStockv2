@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -33,6 +31,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.messaging.FirebaseMessaging
 import com.taller.motostock.core.common.Constants
 import com.taller.motostock.core.designsystem.MotoStockDs
+import com.taller.motostock.core.designsystem.MotoStockTextField
 import com.taller.motostock.core.domain.model.UserRole
 import com.taller.motostock.feature.auth.AuthContract
 import com.taller.motostock.feature.auth.viewmodel.LoginViewModel
@@ -70,7 +69,7 @@ fun LoginScreen(
         }
     }
 
-    // Colectar efectos: el ViewModel ya maneja el auto-redirect desde su init{}
+    // La pantalla de acceso requiere una acción explícita del usuario.
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collect { effect ->
             when (effect) {
@@ -148,64 +147,21 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Input Correo
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = "Correo Electrónico",
-                        style = MotoStockDs.typography.labelMedium,
-                        color = MotoStockDs.colors.onSurfaceVariant
-                    )
-                    BasicTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (email.isEmpty()) {
-                                    Text("correo@ejemplo.com", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                }
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
-
-                // Input Contraseña
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = "Contraseña",
-                        style = MotoStockDs.typography.labelMedium,
-                        color = MotoStockDs.colors.onSurfaceVariant
-                    )
-                    BasicTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small)
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (password.isEmpty()) {
-                                    Text("••••••••", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                }
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
+                MotoStockTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = "Correo electrónico",
+                    placeholder = "correo@ejemplo.com",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                )
+                MotoStockTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = "Contraseña",
+                    placeholder = "••••••••",
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
 
                 // Botón Iniciar Sesión
                 Button(

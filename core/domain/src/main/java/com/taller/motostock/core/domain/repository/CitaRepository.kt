@@ -15,6 +15,7 @@ interface CitaRepository {
     fun getFinalizadosPorFecha(inicio: Long, fin: Long): Flow<List<Cita>>
     fun getCitasPorCliente(uid: String): Flow<List<Cita>>
     fun getCitasPorEmail(email: String): Flow<List<Cita>>
+    fun getCitasPorClienteOEmail(uid: String, email: String): Flow<List<Cita>>
     suspend fun save(cita: Cita)
     suspend fun update(cita: Cita)
     suspend fun delete(id: String)

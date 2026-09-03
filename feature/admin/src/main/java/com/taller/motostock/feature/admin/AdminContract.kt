@@ -17,6 +17,6 @@ interface AdminContract {
 
     sealed interface Effect : UiEffect {
         data class ShowMessage(val message: String) : Effect
-        data object NavigateToLogin : Effect
+        data object NavigateBackToDashboard : Effect
     }
 }

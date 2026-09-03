@@ -39,6 +39,14 @@ data class MotoStockColors(
     val onErrorContainer: Color,
     val success: Color,
     val onSuccess: Color,
+    val successContainer: Color,
+    val onSuccessContainer: Color,
+    val warning: Color,
+    val onWarning: Color,
+    val warningContainer: Color,
+    val onWarningContainer: Color,
+    val infoContainer: Color,
+    val onInfoContainer: Color,
     val isLight: Boolean
 )
 
@@ -77,6 +85,14 @@ val LocalMotoStockColors = staticCompositionLocalOf {
         onErrorContainer = Color.Unspecified,
         success = Color.Unspecified,
         onSuccess = Color.Unspecified,
+        successContainer = Color.Unspecified,
+        onSuccessContainer = Color.Unspecified,
+        warning = Color.Unspecified,
+        onWarning = Color.Unspecified,
+        warningContainer = Color.Unspecified,
+        onWarningContainer = Color.Unspecified,
+        infoContainer = Color.Unspecified,
+        onInfoContainer = Color.Unspecified,
         isLight = true
     )
 }

@@ -2,7 +2,7 @@ package com.taller.motostock.feature.admin.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.taller.motostock.core.common.mvi.MviViewModel
-import com.taller.motostock.core.domain.repository.AuthRepository
+import com.taller.motostock.core.domain.usecase.auth.CreateWorkerUseCase
 import com.taller.motostock.feature.admin.AdminContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val createWorker: CreateWorkerUseCase
 ) : MviViewModel<AdminContract.State, AdminContract.Intent, AdminContract.Effect>(
     initialState = AdminContract.State()
 ) {
@@ -28,10 +28,10 @@ class AdminViewModel @Inject constructor(
             return@launch
         }
         updateState { copy(isLoading = true, error = null) }
-        val result = authRepository.crearTrabajador(intent.email.trim(), intent.password, intent.nombre.trim())
+        val result = createWorker(intent.email.trim(), intent.password, intent.nombre.trim())
         if (result.isSuccess) {
             updateState { AdminContract.State() }
-            sendEffect(AdminContract.Effect.NavigateToLogin)
+            sendEffect(AdminContract.Effect.NavigateBackToDashboard)
         } else {
             val message = result.exceptionOrNull()?.message ?: "No se pudo crear el trabajador"
             updateState { copy(isLoading = false, error = message) }

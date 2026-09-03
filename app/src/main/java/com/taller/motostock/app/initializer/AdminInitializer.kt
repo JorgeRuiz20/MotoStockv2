@@ -27,8 +27,8 @@ class AdminInitializer @Inject constructor() {
 
     companion object {
         private const val TAG = "AdminInitializer"
-        const val ADMIN_EMAIL = "admin.test@motostock.com"
-        const val ADMIN_PASSWORD = "admin123"
+        const val ADMIN_EMAIL = "admin@motostock.com"
+        const val ADMIN_PASSWORD = "123456"
         const val ADMIN_NOMBRE = "Administrador"
         private const val SECONDARY_APP_NAME = "MotoStockAdminSeeder"
     }

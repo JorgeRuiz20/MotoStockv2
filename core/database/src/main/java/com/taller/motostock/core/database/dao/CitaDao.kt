@@ -39,8 +39,23 @@ interface CitaDao {
     @Query("SELECT * FROM citas WHERE clienteEmail = :email ORDER BY fechaIngreso DESC")
     fun getCitasPorEmail(email: String): Flow<List<CitaEntity>>
 
+    @Query("SELECT * FROM citas WHERE clienteUid = :uid OR clienteEmail = :email ORDER BY fechaIngreso DESC")
+    fun getCitasPorClienteOEmail(uid: String, email: String): Flow<List<CitaEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cita: CitaEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(citas: List<CitaEntity>)
+
+    @Query("DELETE FROM citas")
+    suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(citas: List<CitaEntity>) {
+        deleteAll()
+        insertAll(citas)
+    }
 
     @Update
     suspend fun update(cita: CitaEntity)

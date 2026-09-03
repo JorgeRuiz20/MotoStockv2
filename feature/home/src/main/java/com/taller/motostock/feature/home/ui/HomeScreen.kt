@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.taller.motostock.core.designsystem.MotoStockDs
+import com.taller.motostock.core.designsystem.MotoStockCard
 import com.taller.motostock.core.domain.model.UserRole
 import com.taller.motostock.feature.home.HomeContract
 import com.taller.motostock.feature.home.viewmodel.HomeViewModel
@@ -157,7 +158,7 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFFFF3E0), shape = MotoStockDs.shapes.medium)
+                            .background(MotoStockDs.colors.warningContainer, shape = MotoStockDs.shapes.medium)
                             .padding(12.dp)
                     ) {
                         Row(
@@ -167,13 +168,13 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
-                                tint = Color(0xFFF57C00),
+                                tint = MotoStockDs.colors.warning,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
                                 text = "${state.repuestosStockBajo} repuesto(s) con stock bajo. Revisar inventario.",
                                 style = MotoStockDs.typography.bodySmall,
-                                color = Color(0xFFF57C00)
+                                color = MotoStockDs.colors.onWarningContainer
                             )
                         }
                     }
@@ -279,14 +280,14 @@ fun HomeScreen(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .background(Color(0xFFFFF3E0), shape = MotoStockDs.shapes.full)
+                                        .background(MotoStockDs.colors.warningContainer, shape = MotoStockDs.shapes.full)
                                         .padding(horizontal = 10.dp, vertical = 4.dp)
                                 ) {
-                                    Text("${state.citasPendientes} pendientes", style = MotoStockDs.typography.labelSmall, color = Color(0xFFF57C00))
+                                    Text("${state.citasPendientes} pendientes", style = MotoStockDs.typography.labelSmall, color = MotoStockDs.colors.onWarningContainer)
                                 }
                                 Box(
                                     modifier = Modifier
-                                        .background(Color(0xFFE8F0FE), shape = MotoStockDs.shapes.full)
+                                        .background(MotoStockDs.colors.infoContainer, shape = MotoStockDs.shapes.full)
                                         .padding(horizontal = 10.dp, vertical = 4.dp)
                                 ) {
                                     Text("${state.citasEnProceso} en proceso", style = MotoStockDs.typography.labelSmall, color = MotoStockDs.colors.primary)
@@ -315,7 +316,7 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFFFF3E0), shape = MotoStockDs.shapes.medium)
+                            .background(MotoStockDs.colors.warningContainer, shape = MotoStockDs.shapes.medium)
                             .padding(12.dp)
                             .clickable { navController.navigate("inventario") }
                     ) {
@@ -326,13 +327,13 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
-                                tint = Color(0xFFF57C00),
+                                tint = MotoStockDs.colors.warning,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
                                 text = "${state.repuestosStockBajo} repuesto(s) con stock bajo. Ver inventario →",
                                 style = MotoStockDs.typography.bodySmall,
-                                color = Color(0xFFF57C00)
+                                color = MotoStockDs.colors.onWarningContainer
                             )
                         }
                     }
@@ -353,14 +354,12 @@ fun DashboardCard(
     subtitleColor: Color = MotoStockDs.colors.onSurfaceVariant,
     onClick: (() -> Unit)? = null
 ) {
-    Box(
-        modifier = modifier
-            .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
-            .padding(16.dp)
+    MotoStockCard(
+        modifier = modifier,
+        onClick = onClick
     ) {
-        Column {
-            Text(text = title, style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = title, style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurfaceVariant)
             Text(text = value, style = valueStyle, color = valueColor, modifier = Modifier.padding(top = 4.dp))
             if (subtitle != null) {
                 Text(text = subtitle, style = MotoStockDs.typography.bodySmall, color = subtitleColor, modifier = Modifier.padding(top = 4.dp))
@@ -376,13 +375,14 @@ fun AdminQuickAction(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier
-            .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.medium)
-            .clickable { onClick() }
-            .padding(12.dp)
+    MotoStockCard(
+        modifier = modifier,
+        onClick = onClick
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
             Text(title, style = MotoStockDs.typography.labelLarge, color = MotoStockDs.colors.primary)
             Text(subtitle, style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
         }

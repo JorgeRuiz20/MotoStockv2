@@ -3,6 +3,7 @@ package com.taller.motostock.app.ui.theme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -111,6 +112,14 @@ fun MotoStockTheme(
             onErrorContainer = Color(0xFFFFDAD6),
             success = Color(0xFF388E3C),
             onSuccess = Color(0xFFFFFFFF),
+            successContainer = Color(0xFF1B5E20),
+            onSuccessContainer = Color(0xFFC8E6C9),
+            warning = Color(0xFFFFB74D),
+            onWarning = Color(0xFF3E2100),
+            warningContainer = Color(0xFF6B3B00),
+            onWarningContainer = Color(0xFFFFDDB8),
+            infoContainer = Color(0xFF1B3A6B),
+            onInfoContainer = Color(0xFFD7E2FF),
             isLight = false
         )
     } else {
@@ -148,20 +157,28 @@ fun MotoStockTheme(
             onErrorContainer = Color(0xFF93000A),
             success = Color(0xFF388E3C),
             onSuccess = Color(0xFFFFFFFF),
+            successContainer = Color(0xFFE8F5E9),
+            onSuccessContainer = Color(0xFF1B5E20),
+            warning = Color(0xFFF57C00),
+            onWarning = Color(0xFFFFFFFF),
+            warningContainer = Color(0xFFFFF3E0),
+            onWarningContainer = Color(0xFFE65100),
+            infoContainer = Color(0xFFE8F0FE),
+            onInfoContainer = Color(0xFF1B3A6B),
             isLight = true
         )
     }
 
     val typography = MotoStockTypography(
-        h1 = TextStyle(fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 48.sp, letterSpacing = (-0.25).sp), // display-lg
-        h2 = TextStyle(fontWeight = FontWeight.Bold, fontSize = 30.sp, lineHeight = 36.sp), // headline-lg
-        h3 = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp, lineHeight = 30.sp), // headline-md
-        bodyLarge = TextStyle(fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp), // body-lg
-        bodyMedium = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.25.sp), // body-md
-        bodySmall = TextStyle(fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp), // body-sm
-        labelLarge = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp), // label-lg
-        labelMedium = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp), // label-md
-        labelSmall = TextStyle(fontWeight = FontWeight.Bold, fontSize = 11.sp, lineHeight = 14.sp, letterSpacing = 0.5.sp) // label-sm
+        h1 = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 48.sp, letterSpacing = (-0.25).sp),
+        h2 = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Bold, fontSize = 30.sp, lineHeight = 36.sp),
+        h3 = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Bold, fontSize = 24.sp, lineHeight = 30.sp),
+        bodyLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp),
+        bodyMedium = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.25.sp),
+        bodySmall = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp),
+        labelLarge = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp),
+        labelMedium = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp),
+        labelSmall = TextStyle(fontFamily = FontFamily.SansSerif, fontWeight = FontWeight.Bold, fontSize = 11.sp, lineHeight = 14.sp, letterSpacing = 0.5.sp)
     )
 
     val view = LocalView.current
@@ -182,7 +199,18 @@ fun MotoStockTheme(
     ) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
-            typography = Typography,
+            typography = Typography(
+                displayLarge = typography.h1,
+                headlineLarge = typography.h2,
+                headlineMedium = typography.h3,
+                titleLarge = typography.h3,
+                bodyLarge = typography.bodyLarge,
+                bodyMedium = typography.bodyMedium,
+                bodySmall = typography.bodySmall,
+                labelLarge = typography.labelLarge,
+                labelMedium = typography.labelMedium,
+                labelSmall = typography.labelSmall
+            ),
             content = content
         )
     }

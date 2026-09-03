@@ -16,13 +16,6 @@ class LoginViewModel @Inject constructor(
     initialState = AuthContract.State()
 ) {
 
-    init {
-        // Si ya hay una sesión activa, redirigir sin esperar interacción del usuario
-        if (authRepository.haySesionActiva()) {
-            cargarRolYNavegar()
-        }
-    }
-
     override fun onIntent(intent: AuthContract.Intent) {
         when (intent) {
             is AuthContract.Intent.Login -> login(intent.email, intent.pass)

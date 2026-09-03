@@ -146,7 +146,7 @@ fun EnTallerItem(cita: Cita, onFinalizar: () -> Unit) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFFE8F0FE), shape = MotoStockDs.shapes.full)
+                            .background(MotoStockDs.colors.infoContainer, shape = MotoStockDs.shapes.full)
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     ) {
                         Row(

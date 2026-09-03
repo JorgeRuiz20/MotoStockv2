@@ -38,9 +38,10 @@ class ClienteViewModel @Inject constructor(
 
     private fun cargarMisCitas() {
         viewModelScope.launch {
-            val email = authRepository.usuarioActual() ?: ""
-            if (email.isNotBlank()) {
-                citaRepository.getCitasPorEmail(email).collect { citas ->
+            val uid = authRepository.usuarioActualUid().orEmpty()
+            val email = authRepository.usuarioActual().orEmpty()
+            if (uid.isNotBlank() || email.isNotBlank()) {
+                citaRepository.getCitasPorClienteOEmail(uid, email).collect { citas ->
                     updateState { copy(misCitas = citas) }
                 }
             }
@@ -119,7 +120,11 @@ class ClienteViewModel @Inject constructor(
                     motivoRechazo = "",
                     motivoCancelacion = "",
                     clienteEmail = email,
-                    clienteUid = uid
+                    clienteUid = uid,
+                    fechaSalida = null,
+                    horaSalida = "",
+                    repuestosUsadosJson = "",
+                    costoServicio = 0.0
                 )
                 citaRepository.save(nuevaCita)
                 notificationHelper.notificarNuevaCitaATrabajadores(nuevaCita)

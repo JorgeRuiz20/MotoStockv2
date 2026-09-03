@@ -179,7 +179,7 @@ fun MotoStockBottomBar(
     NavigationBar(
         containerColor = MotoStockDs.colors.surfaceContainerLowest,
         contentColor = MotoStockDs.colors.primary,
-        tonalElevation = 8.dp
+        tonalElevation = MotoStockDs.elevation.large
     ) {
         items.forEach { item ->
             val isSelected = currentRoute == item.route

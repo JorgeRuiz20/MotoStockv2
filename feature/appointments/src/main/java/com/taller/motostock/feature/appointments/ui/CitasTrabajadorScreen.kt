@@ -236,7 +236,7 @@ fun CitaItem(
 ) {
     val fmt = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
     val borderAccentColor = when (cita.estado) {
-        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.PENDIENTE -> MotoStockDs.colors.warning
         EstadoCita.ACEPTADA -> MotoStockDs.colors.primary
         EstadoCita.EN_PROCESO -> MotoStockDs.colors.secondaryContainer
         EstadoCita.FINALIZADO -> MotoStockDs.colors.success
@@ -244,14 +244,14 @@ fun CitaItem(
     }
 
     val statusBg = when (cita.estado) {
-        EstadoCita.PENDIENTE -> Color(0xFFFFF3E0)
-        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> Color(0xFFE8F0FE)
-        EstadoCita.FINALIZADO -> Color(0xFFE8F5E9)
+        EstadoCita.PENDIENTE -> MotoStockDs.colors.warningContainer
+        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> MotoStockDs.colors.infoContainer
+        EstadoCita.FINALIZADO -> MotoStockDs.colors.successContainer
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.errorContainer
     }
 
     val statusText = when (cita.estado) {
-        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.PENDIENTE -> MotoStockDs.colors.onWarningContainer
         EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> MotoStockDs.colors.primary
         EstadoCita.FINALIZADO -> MotoStockDs.colors.success
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.onErrorContainer
@@ -529,7 +529,8 @@ fun MotivoDialog(
                     containerColor = MotoStockDs.colors.primary,
                     contentColor = MotoStockDs.colors.onPrimary
                 ),
-                shape = MotoStockDs.shapes.small
+                shape = MotoStockDs.shapes.small,
+                enabled = motivo.isNotBlank()
             ) {
                 Text("Confirmar", style = MotoStockDs.typography.labelMedium)
             }

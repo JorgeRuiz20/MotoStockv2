@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -23,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.taller.motostock.core.designsystem.MotoStockDs
+import com.taller.motostock.core.designsystem.MotoStockTextField
 import com.taller.motostock.feature.auth.AuthContract
 import com.taller.motostock.feature.auth.viewmodel.LoginViewModel
 
@@ -97,86 +96,10 @@ fun RegisterScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                // Input Nombre Completo
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Nombre Completo", style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurfaceVariant)
-                    BasicTextField(
-                        value = nombre,
-                        onValueChange = { nombre = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxWidth().background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small).padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (nombre.isEmpty()) Text("Juan Pérez", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
-
-                // Input Correo
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Correo Electrónico", style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurfaceVariant)
-                    BasicTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxWidth().background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small).padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (email.isEmpty()) Text("juan@ejemplo.com", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
-
-                // Input Contraseña
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Contraseña", style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurfaceVariant)
-                    BasicTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxWidth().background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small).padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (password.isEmpty()) Text("••••••••", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
-
-                // Input Confirmar Contraseña
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Confirmar Contraseña", style = MotoStockDs.typography.labelMedium, color = MotoStockDs.colors.onSurfaceVariant)
-                    BasicTextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        textStyle = MotoStockDs.typography.bodyMedium.copy(color = MotoStockDs.colors.onSurface),
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        cursorBrush = SolidColor(MotoStockDs.colors.primary),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxWidth().background(MotoStockDs.colors.surfaceContainerLow, shape = MotoStockDs.shapes.small).padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                if (confirmPassword.isEmpty()) Text("••••••••", style = MotoStockDs.typography.bodyMedium, color = MotoStockDs.colors.onSurfaceVariant.copy(alpha = 0.5f))
-                                innerTextField()
-                            }
-                        }
-                    )
-                }
+                MotoStockTextField(nombre, { nombre = it }, "Nombre completo", placeholder = "Juan Pérez")
+                MotoStockTextField(email, { email = it }, "Correo electrónico", placeholder = "juan@ejemplo.com", keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
+                MotoStockTextField(password, { password = it }, "Contraseña", placeholder = "••••••••", visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
+                MotoStockTextField(confirmPassword, { confirmPassword = it }, "Confirmar contraseña", placeholder = "••••••••", visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password))
                 
                 Spacer(modifier = Modifier.height(8.dp))
 

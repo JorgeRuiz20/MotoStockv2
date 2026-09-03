@@ -108,7 +108,12 @@ class CitasViewModel @Inject constructor(
     private fun rechazarCita(cita: Cita, motivo: String) {
         viewModelScope.launch {
             try {
-                val citaActualizada = cita.copy(estado = EstadoCita.RECHAZADA, motivoRechazo = motivo)
+                val motivoLimpio = motivo.trim()
+                if (motivoLimpio.isBlank()) {
+                    sendEffect(CitasContract.Effect.ShowMessage("Indica el motivo del rechazo"))
+                    return@launch
+                }
+                val citaActualizada = cita.copy(estado = EstadoCita.RECHAZADA, motivoRechazo = motivoLimpio)
                 updateCita(citaActualizada)
                 sendEffect(CitasContract.Effect.ShowMessage("Cita rechazada"))
                 notificationHelper.notificarCitaRechazada(citaActualizada)
@@ -121,7 +126,12 @@ class CitasViewModel @Inject constructor(
     private fun cancelarCita(cita: Cita, motivo: String) {
         viewModelScope.launch {
             try {
-                val citaActualizada = cita.copy(estado = EstadoCita.CANCELADA, motivoCancelacion = motivo)
+                val motivoLimpio = motivo.trim()
+                if (motivoLimpio.isBlank()) {
+                    sendEffect(CitasContract.Effect.ShowMessage("Indica el motivo de la cancelación"))
+                    return@launch
+                }
+                val citaActualizada = cita.copy(estado = EstadoCita.CANCELADA, motivoCancelacion = motivoLimpio)
                 updateCita(citaActualizada)
                 sendEffect(CitasContract.Effect.ShowMessage("Cita cancelada"))
                 notificationHelper.notificarCitaCancelada(citaActualizada)

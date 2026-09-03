@@ -117,15 +117,15 @@ fun CitaClienteItem(cita: Cita, onReagendar: () -> Unit) {
     val fmt = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
     val statusBg = when (cita.estado) {
-        EstadoCita.FINALIZADO -> Color(0xFFE8F5E9)
-        EstadoCita.PENDIENTE -> Color(0xFFFFF3E0)
-        EstadoCita.EN_PROCESO, EstadoCita.ACEPTADA -> Color(0xFFE8F0FE)
+        EstadoCita.FINALIZADO -> MotoStockDs.colors.successContainer
+        EstadoCita.PENDIENTE -> MotoStockDs.colors.warningContainer
+        EstadoCita.EN_PROCESO, EstadoCita.ACEPTADA -> MotoStockDs.colors.infoContainer
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.errorContainer
     }
 
     val statusText = when (cita.estado) {
         EstadoCita.FINALIZADO -> MotoStockDs.colors.success
-        EstadoCita.PENDIENTE -> Color(0xFFF57C00)
+        EstadoCita.PENDIENTE -> MotoStockDs.colors.onWarningContainer
         EstadoCita.EN_PROCESO, EstadoCita.ACEPTADA -> MotoStockDs.colors.primary
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.onErrorContainer
     }
@@ -226,18 +226,31 @@ fun CitaClienteItem(cita: Cita, onReagendar: () -> Unit) {
                             color = MotoStockDs.colors.onSurfaceVariant
                         )
                     }
-                    if (cita.motivoRechazo.isNotBlank()) {
+                }
+            }
+
+            val motivo = when (cita.estado) {
+                EstadoCita.RECHAZADA -> cita.motivoRechazo
+                EstadoCita.CANCELADA -> cita.motivoCancelacion
+                else -> ""
+            }
+            if (motivo.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MotoStockDs.colors.errorContainer.copy(alpha = 0.55f), shape = MotoStockDs.shapes.small)
+                        .padding(12.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         Text(
-                            text = "Motivo de rechazo: ${cita.motivoRechazo}",
-                            style = MotoStockDs.typography.bodySmall,
-                            color = MotoStockDs.colors.error
+                            text = if (cita.estado == EstadoCita.RECHAZADA) "Motivo del rechazo" else "Motivo de la cancelación",
+                            style = MotoStockDs.typography.labelMedium,
+                            color = MotoStockDs.colors.onErrorContainer
                         )
-                    }
-                    if (cita.motivoCancelacion.isNotBlank()) {
                         Text(
-                            text = "Motivo de cancelación: ${cita.motivoCancelacion}",
+                            text = motivo,
                             style = MotoStockDs.typography.bodySmall,
-                            color = MotoStockDs.colors.error
+                            color = MotoStockDs.colors.onErrorContainer
                         )
                     }
                 }
@@ -254,7 +267,7 @@ fun CitaClienteItem(cita: Cita, onReagendar: () -> Unit) {
                         contentColor = MotoStockDs.colors.onPrimary
                     )
                 ) {
-                    Text("Reagendar cita", style = MotoStockDs.typography.labelMedium)
+                    Text("Solicitar nueva fecha", style = MotoStockDs.typography.labelMedium)
                 }
             }
         }

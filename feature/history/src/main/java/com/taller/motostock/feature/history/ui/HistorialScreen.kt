@@ -149,7 +149,7 @@ fun HistorialItem(cita: Cita) {
             
             // Etiqueta y Fecha
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.background(Color(0xFFE8F5E9), shape = MotoStockDs.shapes.full).padding(horizontal = 10.dp, vertical = 4.dp)) {
+                Box(modifier = Modifier.background(MotoStockDs.colors.successContainer, shape = MotoStockDs.shapes.full).padding(horizontal = 10.dp, vertical = 4.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(14.dp), tint = MotoStockDs.colors.success)
                         Text("Finalizado", style = MotoStockDs.typography.labelSmall, color = MotoStockDs.colors.success)
