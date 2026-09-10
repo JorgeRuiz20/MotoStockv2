@@ -1,0 +1,30 @@
+CREATE TABLE repuestoRecord (
+    id TEXT NOT NULL PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    categoria TEXT NOT NULL,
+    cantidad INTEGER NOT NULL,
+    precioCompra REAL NOT NULL,
+    precioVenta REAL NOT NULL,
+    stockMinimo INTEGER NOT NULL,
+    proveedor TEXT NOT NULL,
+    fechaActualizacion INTEGER NOT NULL
+);
+
+getAll:
+SELECT * FROM repuestoRecord ORDER BY nombre ASC;
+
+getStockBajo:
+SELECT * FROM repuestoRecord WHERE cantidad <= stockMinimo ORDER BY cantidad ASC;
+
+getById:
+SELECT * FROM repuestoRecord WHERE id = :id;
+
+insert:
+INSERT OR REPLACE INTO repuestoRecord (
+    id, nombre, categoria, cantidad, precioCompra, precioVenta, stockMinimo, proveedor, fechaActualizacion
+) VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?
+);
+
+delete:
+DELETE FROM repuestoRecord WHERE id = :id;

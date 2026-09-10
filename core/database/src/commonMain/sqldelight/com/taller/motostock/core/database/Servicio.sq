@@ -1,0 +1,31 @@
+CREATE TABLE servicioRecord (
+    id TEXT NOT NULL PRIMARY KEY,
+    placa TEXT NOT NULL,
+    fechaIngreso INTEGER NOT NULL,
+    fechaSalida INTEGER,
+    descripcionProblema TEXT NOT NULL,
+    trabajoRealizado TEXT NOT NULL,
+    repuestosUsadosJson TEXT NOT NULL,
+    kilometraje INTEGER NOT NULL,
+    costoManoObra REAL NOT NULL,
+    estado TEXT NOT NULL,
+    tecnico TEXT NOT NULL,
+    observaciones TEXT NOT NULL
+);
+
+getByPlaca:
+SELECT * FROM servicioRecord WHERE UPPER(placa) = UPPER(:placa) ORDER BY fechaIngreso DESC;
+
+getAll:
+SELECT * FROM servicioRecord ORDER BY fechaIngreso DESC;
+
+insert:
+INSERT OR REPLACE INTO servicioRecord (
+    id, placa, fechaIngreso, fechaSalida, descripcionProblema,
+    trabajoRealizado, repuestosUsadosJson, kilometraje, costoManoObra,
+    estado, tecnico, observaciones
+) VALUES (
+    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?
+);

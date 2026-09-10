@@ -1,0 +1,76 @@
+CREATE TABLE citaRecord (
+    id TEXT NOT NULL PRIMARY KEY,
+    placa TEXT NOT NULL,
+    propietario TEXT NOT NULL,
+    telefono TEXT NOT NULL,
+    modelo TEXT NOT NULL,
+    fechaIngreso INTEGER NOT NULL,
+    horaIngreso TEXT NOT NULL,
+    horaDeseada TEXT NOT NULL DEFAULT '',
+    tipoServicio TEXT NOT NULL,
+    descripcion TEXT NOT NULL,
+    estado TEXT NOT NULL,
+    fechaSalida INTEGER,
+    horaSalida TEXT NOT NULL DEFAULT '',
+    motivoRechazo TEXT NOT NULL DEFAULT '',
+    motivoCancelacion TEXT NOT NULL DEFAULT '',
+    clienteUid TEXT NOT NULL DEFAULT '',
+    clienteEmail TEXT NOT NULL DEFAULT '',
+    repuestosUsadosJson TEXT NOT NULL DEFAULT '',
+    costoServicio REAL NOT NULL DEFAULT 0.0
+);
+
+getAll:
+SELECT * FROM citaRecord ORDER BY fechaIngreso DESC;
+
+getPendientes:
+SELECT * FROM citaRecord WHERE estado = 'PENDIENTE' ORDER BY fechaIngreso DESC;
+
+getAceptadas:
+SELECT * FROM citaRecord WHERE estado = 'ACEPTADA' ORDER BY fechaIngreso DESC;
+
+getEnProceso:
+SELECT * FROM citaRecord WHERE estado = 'EN_PROCESO' ORDER BY fechaIngreso DESC;
+
+getAceptadasYEnProceso:
+SELECT * FROM citaRecord WHERE estado IN ('ACEPTADA', 'EN_PROCESO') ORDER BY fechaIngreso DESC;
+
+getEnTaller:
+SELECT * FROM citaRecord WHERE estado = 'EN_PROCESO' ORDER BY fechaIngreso DESC;
+
+getFinalizados:
+SELECT * FROM citaRecord WHERE estado = 'FINALIZADO' ORDER BY fechaIngreso DESC;
+
+buscarFinalizadosPorPlaca:
+SELECT * FROM citaRecord WHERE UPPER(placa) LIKE '%' || UPPER(:placa) || '%' AND estado = 'FINALIZADO' ORDER BY fechaIngreso DESC;
+
+getFinalizadosPorFecha:
+SELECT * FROM citaRecord WHERE estado = 'FINALIZADO' AND fechaIngreso BETWEEN :inicio AND :fin ORDER BY fechaIngreso DESC;
+
+getCitasPorCliente:
+SELECT * FROM citaRecord WHERE clienteUid = :uid ORDER BY fechaIngreso DESC;
+
+getCitasPorEmail:
+SELECT * FROM citaRecord WHERE clienteEmail = :email ORDER BY fechaIngreso DESC;
+
+getCitasPorClienteOEmail:
+SELECT * FROM citaRecord WHERE clienteUid = :uid OR clienteEmail = :email ORDER BY fechaIngreso DESC;
+
+insert:
+INSERT OR REPLACE INTO citaRecord (
+    id, placa, propietario, telefono, modelo, fechaIngreso,
+    horaIngreso, horaDeseada, tipoServicio, descripcion, estado,
+    fechaSalida, horaSalida, motivoRechazo, motivoCancelacion,
+    clienteUid, clienteEmail, repuestosUsadosJson, costoServicio
+) VALUES (
+    ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?,
+    ?, ?, ?, ?
+);
+
+deleteAll:
+DELETE FROM citaRecord;
+
+delete:
+DELETE FROM citaRecord WHERE id = :id;

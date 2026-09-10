@@ -1,7 +1,7 @@
 package com.taller.motostock.app.di
 
 import android.content.Context
-import androidx.room.Room
+import com.taller.motostock.core.database.DatabaseDriverFactory
 import com.taller.motostock.core.database.dao.CitaDao
 import com.taller.motostock.core.database.dao.MotoDao
 import com.taller.motostock.core.database.dao.RepuestoDao
@@ -18,14 +18,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    @Provides @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): MotoStockDatabase =
-        Room.databaseBuilder(context, MotoStockDatabase::class.java, MotoStockDatabase.DATABASE_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): MotoStockDatabase {
+        val driver = DatabaseDriverFactory(context).createDriver()
+        return MotoStockDatabase(driver)
+    }
 
-    @Provides fun provideRepuestoDao(db: MotoStockDatabase): RepuestoDao = db.repuestoDao()
-    @Provides fun provideMotoDao(db: MotoStockDatabase): MotoDao = db.motoDao()
-    @Provides fun provideServicioDao(db: MotoStockDatabase): ServicioDao = db.servicioDao()
-    @Provides fun provideCitaDao(db: MotoStockDatabase): CitaDao = db.citaDao()
+    @Provides fun provideRepuestoDao(db: MotoStockDatabase): RepuestoDao = db.repuestoDao
+    @Provides fun provideMotoDao(db: MotoStockDatabase): MotoDao = db.motoDao
+    @Provides fun provideServicioDao(db: MotoStockDatabase): ServicioDao = db.servicioDao
+    @Provides fun provideCitaDao(db: MotoStockDatabase): CitaDao = db.citaDao
 }

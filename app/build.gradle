@@ -83,10 +83,9 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
-    // Room
-    implementation libs.room.runtime
-    implementation libs.room.ktx
-    kapt libs.room.compiler
+    // SQLDelight Database
+    implementation libs.sqldelight.android.driver
+
 
     // Firebase
     implementation platform(libs.firebase.bom)
@@ -94,6 +93,8 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.firebase.analytics.ktx
     implementation libs.firebase.messaging.ktx
+    implementation libs.gitlive.firebase.firestore
+    implementation libs.gitlive.firebase.auth
 
     // Google Sign-In
     implementation libs.play.services.auth
@@ -102,11 +103,10 @@ dependencies {
     implementation libs.hilt.android
     kapt libs.hilt.compiler
 
-    // Retrofit + OkHttp
-    implementation libs.retrofit
-    implementation libs.retrofit.converter.gson
-    implementation libs.okhttp
-    implementation libs.okhttp.logging.interceptor
+    // Ktor HTTP
+    implementation libs.ktor.client.core
+    implementation libs.ktor.client.okhttp
+
 
     // Coroutines
     implementation libs.kotlinx.coroutines.android

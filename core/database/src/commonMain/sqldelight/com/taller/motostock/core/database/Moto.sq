@@ -1,0 +1,22 @@
+CREATE TABLE motoRecord (
+    id TEXT NOT NULL PRIMARY KEY,
+    placa TEXT NOT NULL,
+    marca TEXT NOT NULL,
+    modelo TEXT NOT NULL,
+    anio INTEGER NOT NULL,
+    color TEXT NOT NULL,
+    propietario TEXT NOT NULL,
+    telefono TEXT NOT NULL,
+    cilindraje TEXT NOT NULL,
+    vin TEXT NOT NULL
+);
+
+getByPlaca:
+SELECT * FROM motoRecord WHERE UPPER(placa) = UPPER(:placa) LIMIT 1;
+
+insert:
+INSERT OR REPLACE INTO motoRecord (
+    id, placa, marca, modelo, anio, color, propietario, telefono, cilindraje, vin
+) VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+);

@@ -1,8 +1,8 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    id 'kotlin-kapt'
-    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -26,37 +26,69 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
-    buildFeatures {
-        compose true
-        buildConfig true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+sqldelight {
+    databases {
+        create("MotoStockDb") {
+            packageName.set("com.taller.motostock.core.database")
+        }
     }
 }
 
-dependencies {
-    implementation project(':core:common')
-    implementation project(':core:domain')
-    
-    implementation libs.androidx.core.ktx
-    implementation libs.hilt.android
-    kapt libs.hilt.compiler
-    
-    // Room
-    implementation libs.room.runtime
-    implementation libs.room.ktx
-    kapt libs.room.compiler
-    implementation libs.gson
-    
-    // Compose
-    implementation platform(libs.androidx.compose.bom)
-    implementation libs.androidx.ui
-    implementation libs.androidx.material3
+kotlin {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = '17'
+                freeCompilerArgs += ["-Xexpect-actual-classes"]
+            }
+        }
+    }
+    iosX64 {
+        binaries.framework {
+            baseName = "Database"
+            isStatic = true
+        }
+    }
+    iosArm64 {
+        binaries.framework {
+            baseName = "Database"
+            isStatic = true
+        }
+    }
+    iosSimulatorArm64 {
+        binaries.framework {
+            baseName = "Database"
+            isStatic = true
+        }
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation project(':core:domain')
+                implementation libs.sqldelight.runtime
+                implementation libs.sqldelight.coroutines
+                implementation libs.kotlinx.coroutines.core
+                implementation libs.kotlinx.serialization.json
+            }
+        }
+        androidMain {
+            dependencies {
+                implementation libs.sqldelight.android.driver
+                implementation libs.kotlinx.coroutines.android
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation libs.sqldelight.native.driver
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test')
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package com.taller.motostock.core.domain.model
 
+import kotlinx.serialization.Serializable
+
 data class ServicioHistorial(
     val id: String = "",
     val placa: String = "",
@@ -17,6 +19,7 @@ data class ServicioHistorial(
     val costoTotal: Double get() = costoManoObra + repuestosUsados.sumOf { it.subtotal }
 }
 
+@Serializable
 data class RepuestoUsado(
     val repuestoId: String = "",
     val nombre: String = "",
