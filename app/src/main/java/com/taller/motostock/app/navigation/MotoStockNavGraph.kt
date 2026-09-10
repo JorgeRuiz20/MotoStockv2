@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,12 +41,12 @@ sealed class BottomNavItem(val route: String, val title: String, val icon: Image
     object Home       : BottomNavItem("home",             "Inicio",     Icons.Default.Home)
     object Citas      : BottomNavItem("citas_trabajador", "Citas",      Icons.Default.DateRange)
     object Inventario : BottomNavItem("inventario",       "Inventario", Icons.Default.ShoppingCart)
-    object Historial  : BottomNavItem("historial",        "Historial",  Icons.Default.List)
+    object Historial  : BottomNavItem("historial",        "Historial",  Icons.AutoMirrored.Filled.List)
 
     // Cliente
     object HomeCliente  : BottomNavItem("home_cliente",    "Inicio",     Icons.Default.Home)
     object Agendar      : BottomNavItem("agendar_cita",    "Agendar",    Icons.Default.DateRange)
-    object MisServicios : BottomNavItem("mis_servicios",   "Servicios",  Icons.Default.List)
+    object MisServicios : BottomNavItem("mis_servicios",   "Servicios",  Icons.AutoMirrored.Filled.List)
 }
 
 private val WORKER_TABS = listOf(
@@ -177,9 +177,9 @@ fun MotoStockBottomBar(
     items: List<BottomNavItem>
 ) {
     NavigationBar(
-        containerColor = MotoStockDs.colors.surfaceContainerLowest,
+        containerColor = MotoStockDs.colors.surface,
         contentColor = MotoStockDs.colors.primary,
-        tonalElevation = MotoStockDs.elevation.large
+        tonalElevation = MotoStockDs.elevation.none
     ) {
         items.forEach { item ->
             val isSelected = currentRoute == item.route
@@ -193,9 +193,9 @@ fun MotoStockBottomBar(
                 },
                 selected = isSelected,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MotoStockDs.colors.onPrimaryFixed,
+                    selectedIconColor = MotoStockDs.colors.primary,
                     selectedTextColor = MotoStockDs.colors.primary,
-                    indicatorColor = MotoStockDs.colors.primaryFixed,
+                    indicatorColor = MotoStockDs.colors.surfaceContainerHighest,
                     unselectedIconColor = MotoStockDs.colors.onSurfaceVariant,
                     unselectedTextColor = MotoStockDs.colors.onSurfaceVariant
                 ),

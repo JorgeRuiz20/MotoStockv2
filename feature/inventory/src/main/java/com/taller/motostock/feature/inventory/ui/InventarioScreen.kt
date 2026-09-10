@@ -85,7 +85,7 @@ fun InventarioScreen(
                 Text(
                     text = "Inventario de Repuestos",
                     style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.primary,
+                    color = MotoStockDs.colors.onSurface,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -94,13 +94,13 @@ fun InventarioScreen(
                 onClick = { navController.navigate("inventario/form") },
                 modifier = Modifier
                     .size(40.dp)
-                    .background(MotoStockDs.colors.secondary, shape = MotoStockDs.shapes.full)
+                    .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.full)
                     .shadow(2.dp, shape = MotoStockDs.shapes.full)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Nuevo Repuesto",
-                    tint = MotoStockDs.colors.onSecondary
+                    tint = MotoStockDs.colors.onPrimary
                 )
             }
         }
@@ -245,7 +245,7 @@ fun RepuestoItemCard(
                     modifier = Modifier
                         .size(48.dp)
                         .background(
-                            color = if (repuesto.stockBajo) MotoStockDs.colors.secondaryContainer else MotoStockDs.colors.primaryFixed,
+                            color = if (repuesto.stockBajo) MotoStockDs.colors.warningContainer else MotoStockDs.colors.primaryContainer,
                             shape = MotoStockDs.shapes.medium
                         ),
                     contentAlignment = Alignment.Center
@@ -254,7 +254,7 @@ fun RepuestoItemCard(
                         imageVector = Icons.Default.Build,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = if (repuesto.stockBajo) MotoStockDs.colors.onSecondaryContainer else MotoStockDs.colors.onPrimaryFixed
+                        tint = if (repuesto.stockBajo) MotoStockDs.colors.warning else MotoStockDs.colors.primary
                     )
                 }
 
@@ -262,7 +262,7 @@ fun RepuestoItemCard(
                     Text(
                         text = repuesto.nombre,
                         style = MotoStockDs.typography.labelLarge,
-                        color = MotoStockDs.colors.primary
+                        color = MotoStockDs.colors.onSurface
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -273,7 +273,7 @@ fun RepuestoItemCard(
                             style = MotoStockDs.typography.bodySmall,
                             color = MotoStockDs.colors.onSurfaceVariant
                         )
-                        val stockColor = if (repuesto.stockBajo) MotoStockDs.colors.secondary else MotoStockDs.colors.success
+                        val stockColor = if (repuesto.stockBajo) MotoStockDs.colors.warning else MotoStockDs.colors.success
                         val stockSuffix = if (repuesto.stockBajo) " (Bajo)" else ""
                         Text(
                             text = "${repuesto.cantidad} unid.$stockSuffix",
@@ -292,7 +292,7 @@ fun RepuestoItemCard(
                 Text(
                     text = "S/. ${String.format("%.2f", repuesto.precioVenta)}",
                     style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.secondary
+                    color = MotoStockDs.colors.onSurface
                 )
                 if (repuesto.proveedor.isNotBlank()) {
                     Text(

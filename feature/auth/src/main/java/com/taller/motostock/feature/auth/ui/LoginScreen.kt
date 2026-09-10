@@ -291,7 +291,7 @@ fun LoginScreen(
             Text(
                 "Regístrate",
                 style = MotoStockDs.typography.labelLarge.copy(textDecoration = TextDecoration.Underline),
-                color = MotoStockDs.colors.secondary,
+                color = MotoStockDs.colors.primary,
                 modifier = Modifier.clickable { navController.navigate("register") }
             )
         }

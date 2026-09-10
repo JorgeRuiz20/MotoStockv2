@@ -88,7 +88,7 @@ fun FormRepuestoScreen(
             Text(
                 text = if (repuestoId == null) "Agregar Nuevo Repuesto" else "Editar Repuesto",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
@@ -276,14 +276,14 @@ fun FormRepuestoScreen(
                     shape = MotoStockDs.shapes.medium,
                     contentPadding = PaddingValues(vertical = 14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MotoStockDs.colors.secondary,
-                        contentColor = MotoStockDs.colors.onSecondary
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
                     )
                 ) {
                     if (state.isSaving) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = MotoStockDs.colors.onSecondary
+                            color = MotoStockDs.colors.onPrimary
                         )
                     } else {
                         Row(

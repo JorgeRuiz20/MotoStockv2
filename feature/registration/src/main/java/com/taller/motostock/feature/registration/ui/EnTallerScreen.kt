@@ -72,7 +72,7 @@ fun EnTallerScreen(
                 Text(
                     text = "Vehículos en Atención",
                     style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.primary
+                    color = MotoStockDs.colors.onSurface
                 )
                 Text(
                     text = "Motos actualmente en el taller",
@@ -129,7 +129,7 @@ fun EnTallerItem(cita: Cita, onFinalizar: () -> Unit) {
                     .width(4.dp)
                     .fillMaxHeight()
                     .defaultMinSize(minHeight = 120.dp)
-                    .background(MotoStockDs.colors.secondaryContainer)
+                    .background(MotoStockDs.colors.primary)
             )
 
             Column(
@@ -202,8 +202,8 @@ fun EnTallerItem(cita: Cita, onFinalizar: () -> Unit) {
                     shape = MotoStockDs.shapes.small,
                     contentPadding = PaddingValues(vertical = 10.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MotoStockDs.colors.secondary,
-                        contentColor = MotoStockDs.colors.onSecondary
+                        containerColor = MotoStockDs.colors.surfaceContainerHighest,
+                        contentColor = MotoStockDs.colors.onSurface
                     )
                 ) {
                     Row(
@@ -332,7 +332,7 @@ fun FinalizarServicioDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
+                Text("Cancelar", color = MotoStockDs.colors.onSurfaceVariant, style = MotoStockDs.typography.labelMedium)
             }
         }
     )

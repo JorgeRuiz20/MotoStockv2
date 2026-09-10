@@ -52,7 +52,7 @@ fun HomeClienteScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MotoStockDs.colors.primary)
+                .background(MotoStockDs.colors.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Row(
@@ -67,25 +67,25 @@ fun HomeClienteScreen(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .background(MotoStockDs.colors.secondaryContainer, shape = MotoStockDs.shapes.full),
+                            .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.full),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
-                            tint = MotoStockDs.colors.onSecondaryContainer
+                            tint = MotoStockDs.colors.onPrimary
                         )
                     }
                     Column {
                         Text(
                             text = "Bienvenido de nuevo,",
                             style = MotoStockDs.typography.bodySmall,
-                            color = MotoStockDs.colors.primaryFixed
+                            color = MotoStockDs.colors.onSurfaceVariant
                         )
                         Text(
                             text = if (state.nombre.isNotBlank()) state.nombre else "Cliente",
                             style = MotoStockDs.typography.h3,
-                            color = MotoStockDs.colors.onPrimary
+                            color = MotoStockDs.colors.onSurface
                         )
                     }
                 }
@@ -93,12 +93,12 @@ fun HomeClienteScreen(
                     onClick = { viewModel.onIntent(HomeContract.Intent.Logout) },
                     modifier = Modifier
                         .size(40.dp)
-                        .background(MotoStockDs.colors.primaryContainer, shape = MotoStockDs.shapes.full)
+                        .background(MotoStockDs.colors.surfaceContainerHigh, shape = MotoStockDs.shapes.full)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Cerrar sesión",
-                        tint = MotoStockDs.colors.primaryFixed
+                        tint = MotoStockDs.colors.onSurfaceVariant
                     )
                 }
             }
@@ -127,17 +127,17 @@ fun HomeClienteScreen(
                         Text(
                             text = "Mis Citas",
                             style = MotoStockDs.typography.h3,
-                            color = MotoStockDs.colors.primary
+                            color = MotoStockDs.colors.onSurface
                         )
                         Box(
                             modifier = Modifier
-                                .background(MotoStockDs.colors.primaryContainer, shape = MotoStockDs.shapes.full)
+                                .background(MotoStockDs.colors.surfaceContainerHighest, shape = MotoStockDs.shapes.full)
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
                                 text = "${state.citasHoy} activas",
                                 style = MotoStockDs.typography.labelSmall,
-                                color = MotoStockDs.colors.onPrimaryContainer
+                                color = MotoStockDs.colors.primary
                             )
                         }
                     }
@@ -182,8 +182,8 @@ fun HomeClienteScreen(
                     title = "Agendar Cita",
                     subtitle = "Reserva taller para mantenimiento o reparación",
                     icon = Icons.Default.DateRange,
-                    iconBgColor = MotoStockDs.colors.secondaryContainer,
-                    iconTintColor = MotoStockDs.colors.onSecondaryContainer,
+                    iconBgColor = MotoStockDs.colors.surfaceContainerHigh,
+                    iconTintColor = MotoStockDs.colors.primary,
                     onClick = { navController.navigate("agendar_cita") }
                 )
                 ActionCard(
@@ -191,8 +191,8 @@ fun HomeClienteScreen(
                     title = "Mis Servicios",
                     subtitle = "Historial, repuestos y facturas anteriores",
                     icon = Icons.AutoMirrored.Filled.List,
-                    iconBgColor = MotoStockDs.colors.primaryFixed,
-                    iconTintColor = MotoStockDs.colors.onPrimaryFixed,
+                    iconBgColor = MotoStockDs.colors.surfaceContainerHigh,
+                    iconTintColor = MotoStockDs.colors.secondary,
                     onClick = { navController.navigate("mis_servicios") }
                 )
             }
@@ -201,19 +201,19 @@ fun HomeClienteScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.medium)
+                    .background(MotoStockDs.colors.surfaceContainerHigh, shape = MotoStockDs.shapes.medium)
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         "Taller Autorizado MotoStock",
                         style = MotoStockDs.typography.h3,
-                        color = MotoStockDs.colors.onPrimary
+                        color = MotoStockDs.colors.onSurface
                     )
                     Text(
                         "Garantía oficial en repuestos originales y servicio certificado.",
                         style = MotoStockDs.typography.bodySmall,
-                        color = MotoStockDs.colors.primaryFixed
+                        color = MotoStockDs.colors.onSurfaceVariant
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -222,13 +222,13 @@ fun HomeClienteScreen(
                         Icon(
                             Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = MotoStockDs.colors.secondaryContainer,
+                            tint = MotoStockDs.colors.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             "Av. Motores 120, Lima • Lunes a Sábado, 8:00 - 18:00",
                             style = MotoStockDs.typography.labelMedium,
-                            color = MotoStockDs.colors.secondaryContainer
+                            color = MotoStockDs.colors.tertiary
                         )
                     }
                 }
@@ -263,7 +263,7 @@ fun ActionCard(
                 Icon(imageVector = icon, contentDescription = null, tint = iconTintColor)
             }
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(title, style = MotoStockDs.typography.h3, color = MotoStockDs.colors.primary)
+                Text(title, style = MotoStockDs.typography.h3, color = MotoStockDs.colors.onSurface)
                 Text(subtitle, style = MotoStockDs.typography.bodySmall, color = MotoStockDs.colors.onSurfaceVariant)
             }
         }

@@ -82,7 +82,7 @@ fun RegisterScreen(
             Text(
                 text = "Crear Cuenta Nueva",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
@@ -117,12 +117,12 @@ fun RegisterScreen(
                     shape = MotoStockDs.shapes.medium,
                     contentPadding = PaddingValues(vertical = 14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MotoStockDs.colors.secondary, // En el HTML es bg-secondary
-                        contentColor = MotoStockDs.colors.onSecondary
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
                     )
                 ) {
                     if (state.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MotoStockDs.colors.onSecondary)
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MotoStockDs.colors.onPrimary)
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Icon(imageVector = Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -148,7 +148,7 @@ fun RegisterScreen(
             Text(
                 "Inicia sesión",
                 style = MotoStockDs.typography.labelLarge.copy(textDecoration = TextDecoration.Underline),
-                color = MotoStockDs.colors.secondary,
+                color = MotoStockDs.colors.primary,
                 modifier = Modifier.clickable { navController.popBackStack() }
             )
         }

@@ -72,7 +72,7 @@ fun MisServiciosScreen(
             Text(
                 text = "Historial de Servicios",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
@@ -351,7 +351,7 @@ fun ReagendarDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
+                Text("Cancelar", color = MotoStockDs.colors.onSurfaceVariant, style = MotoStockDs.typography.labelMedium)
             }
         }
     )

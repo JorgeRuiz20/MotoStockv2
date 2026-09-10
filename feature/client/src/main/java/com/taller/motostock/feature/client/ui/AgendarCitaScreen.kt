@@ -114,7 +114,7 @@ fun AgendarCitaScreen(
             Text(
                 text = "Agendar Nueva Cita",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
@@ -205,12 +205,12 @@ fun AgendarCitaScreen(
                     shape = MotoStockDs.shapes.medium,
                     contentPadding = PaddingValues(vertical = 14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MotoStockDs.colors.secondary,
-                        contentColor = MotoStockDs.colors.onSecondary
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
                     )
                 ) {
                     if (state.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MotoStockDs.colors.onSecondary)
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MotoStockDs.colors.onPrimary)
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(20.dp))

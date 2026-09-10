@@ -99,7 +99,7 @@ fun RegistroVehicularScreen(
                 Text(
                     text = "Registro Vehicular",
                     style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.primary,
+                    color = MotoStockDs.colors.onSurface,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -108,8 +108,8 @@ fun RegistroVehicularScreen(
                 onClick = { navController.navigate("en_taller") },
                 shape = MotoStockDs.shapes.small,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MotoStockDs.colors.secondary,
-                    contentColor = MotoStockDs.colors.onSecondary
+                    containerColor = MotoStockDs.colors.surfaceContainerHighest,
+                    contentColor = MotoStockDs.colors.onSurface
                 )
             ) {
                 Icon(Icons.Default.Build, contentDescription = null, modifier = Modifier.size(16.dp))

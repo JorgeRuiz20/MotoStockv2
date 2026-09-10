@@ -77,7 +77,7 @@ fun HistorialScreen(
             Text(
                 text = "Historial de Servicios",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }

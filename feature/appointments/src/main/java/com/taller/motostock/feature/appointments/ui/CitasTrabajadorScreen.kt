@@ -93,7 +93,7 @@ fun CitasTrabajadorScreen(
                 Text(
                     text = "Gestión de Citas",
                     style = MotoStockDs.typography.h3,
-                    color = MotoStockDs.colors.primary,
+                    color = MotoStockDs.colors.onSurface,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
@@ -133,7 +133,7 @@ fun CitasTrabajadorScreen(
                                 if (isSelected) {
                                     Modifier
                                         .shadow(1.dp, shape = MotoStockDs.shapes.small)
-                                        .background(MotoStockDs.colors.surfaceContainerLowest, shape = MotoStockDs.shapes.small)
+                                        .background(MotoStockDs.colors.surfaceContainerHighest, shape = MotoStockDs.shapes.small)
                                 } else {
                                     Modifier
                                 }
@@ -237,22 +237,24 @@ fun CitaItem(
     val fmt = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
     val borderAccentColor = when (cita.estado) {
         EstadoCita.PENDIENTE -> MotoStockDs.colors.warning
-        EstadoCita.ACEPTADA -> MotoStockDs.colors.primary
-        EstadoCita.EN_PROCESO -> MotoStockDs.colors.secondaryContainer
+        EstadoCita.ACEPTADA -> MotoStockDs.colors.secondary
+        EstadoCita.EN_PROCESO -> MotoStockDs.colors.primary
         EstadoCita.FINALIZADO -> MotoStockDs.colors.success
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.error
     }
 
     val statusBg = when (cita.estado) {
         EstadoCita.PENDIENTE -> MotoStockDs.colors.warningContainer
-        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> MotoStockDs.colors.infoContainer
+        EstadoCita.ACEPTADA -> MotoStockDs.colors.surfaceContainer
+        EstadoCita.EN_PROCESO -> MotoStockDs.colors.primaryContainer
         EstadoCita.FINALIZADO -> MotoStockDs.colors.successContainer
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.errorContainer
     }
 
     val statusText = when (cita.estado) {
         EstadoCita.PENDIENTE -> MotoStockDs.colors.onWarningContainer
-        EstadoCita.ACEPTADA, EstadoCita.EN_PROCESO -> MotoStockDs.colors.primary
+        EstadoCita.ACEPTADA -> MotoStockDs.colors.secondary
+        EstadoCita.EN_PROCESO -> MotoStockDs.colors.primary
         EstadoCita.FINALIZADO -> MotoStockDs.colors.success
         EstadoCita.RECHAZADA, EstadoCita.CANCELADA -> MotoStockDs.colors.onErrorContainer
     }
@@ -366,8 +368,8 @@ fun CitaItem(
                                 shape = MotoStockDs.shapes.small,
                                 contentPadding = PaddingValues(vertical = 10.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MotoStockDs.colors.secondary,
-                                    contentColor = MotoStockDs.colors.onSecondary
+                                    containerColor = MotoStockDs.colors.primary,
+                                    contentColor = MotoStockDs.colors.onPrimary
                                 )
                             ) {
                                 Row(
@@ -462,8 +464,8 @@ fun CitaItem(
                                 shape = MotoStockDs.shapes.small,
                                 contentPadding = PaddingValues(vertical = 10.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MotoStockDs.colors.secondary,
-                                    contentColor = MotoStockDs.colors.onSecondary
+                                    containerColor = MotoStockDs.colors.surfaceContainerHighest,
+                                    contentColor = MotoStockDs.colors.onSurface
                                 )
                             ) {
                                 Row(
@@ -537,7 +539,7 @@ fun MotivoDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
+                Text("Cancelar", color = MotoStockDs.colors.onSurfaceVariant, style = MotoStockDs.typography.labelMedium)
             }
         }
     )
@@ -617,15 +619,15 @@ private fun FinalizarServicioDialog(
                     onConfirm(items, costo.toDoubleOrNull() ?: 0.0)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MotoStockDs.colors.secondary,
-                    contentColor = MotoStockDs.colors.onSecondary
+                    containerColor = MotoStockDs.colors.primary,
+                    contentColor = MotoStockDs.colors.onPrimary
                 ),
                 shape = MotoStockDs.shapes.small
             ) { Text("Confirmar y Finalizar", style = MotoStockDs.typography.labelMedium) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MotoStockDs.colors.secondary, style = MotoStockDs.typography.labelMedium)
+                Text("Cancelar", color = MotoStockDs.colors.onSurfaceVariant, style = MotoStockDs.typography.labelMedium)
             }
         }
     )

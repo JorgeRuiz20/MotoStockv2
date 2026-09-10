@@ -80,7 +80,7 @@ fun FormServicioScreen(
             Text(
                 text = "Orden de Trabajo",
                 style = MotoStockDs.typography.h3,
-                color = MotoStockDs.colors.primary,
+                color = MotoStockDs.colors.onSurface,
                 modifier = Modifier.padding(start = 16.dp)
             )
         }
@@ -304,7 +304,7 @@ fun FormServicioScreen(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
-                            tint = MotoStockDs.colors.secondaryContainer
+                            tint = MotoStockDs.colors.primary
                         )
                     }
                 }
@@ -335,8 +335,8 @@ fun FormServicioScreen(
                     shape = MotoStockDs.shapes.medium,
                     contentPadding = PaddingValues(vertical = 14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MotoStockDs.colors.secondary,
-                        contentColor = MotoStockDs.colors.onSecondary
+                        containerColor = MotoStockDs.colors.primary,
+                        contentColor = MotoStockDs.colors.onPrimary
                     )
                 ) {
                     Row(

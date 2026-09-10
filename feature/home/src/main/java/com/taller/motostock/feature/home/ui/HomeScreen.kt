@@ -54,7 +54,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MotoStockDs.colors.primary)
+                .background(MotoStockDs.colors.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Row(
@@ -69,26 +69,26 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .background(MotoStockDs.colors.secondaryContainer, shape = MotoStockDs.shapes.full),
+                            .background(MotoStockDs.colors.primary, shape = MotoStockDs.shapes.full),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = null,
-                            tint = MotoStockDs.colors.onSecondaryContainer
+                            tint = MotoStockDs.colors.onPrimary
                         )
                     }
                     Column {
                         Text(
                             text = "Bienvenido de nuevo,",
                             style = MotoStockDs.typography.bodySmall,
-                            color = MotoStockDs.colors.primaryFixed
+                            color = MotoStockDs.colors.onSurfaceVariant
                         )
                         Text(
                             text = if (state.nombre.isNotBlank()) state.nombre
                                    else if (isAdmin) "Administrador" else "Mecánico",
                             style = MotoStockDs.typography.h3,
-                            color = MotoStockDs.colors.onPrimary
+                            color = MotoStockDs.colors.onSurface
                         )
                     }
                 }
@@ -96,12 +96,12 @@ fun HomeScreen(
                     onClick = { viewModel.onIntent(HomeContract.Intent.Logout) },
                     modifier = Modifier
                         .size(40.dp)
-                        .background(MotoStockDs.colors.primaryContainer, shape = MotoStockDs.shapes.full)
+                        .background(MotoStockDs.colors.surfaceContainerHigh, shape = MotoStockDs.shapes.full)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                         contentDescription = "Cerrar sesión",
-                        tint = MotoStockDs.colors.primaryFixed
+                        tint = MotoStockDs.colors.onSurfaceVariant
                     )
                 }
             }
@@ -186,14 +186,14 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Gestión de Taller", style = MotoStockDs.typography.h3, color = MotoStockDs.colors.primary)
+                    Text("Gestión de Taller", style = MotoStockDs.typography.h3, color = MotoStockDs.colors.onSurface)
                     Button(
                         onClick = { navController.navigate("crear_trabajador") },
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                         shape = MotoStockDs.shapes.small,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MotoStockDs.colors.secondary,
-                            contentColor = MotoStockDs.colors.onSecondary
+                            containerColor = MotoStockDs.colors.primary,
+                            contentColor = MotoStockDs.colors.onPrimary
                         )
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -249,11 +249,11 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Citas Activas", style = MotoStockDs.typography.h3, color = MotoStockDs.colors.primary)
+                    Text("Citas Activas", style = MotoStockDs.typography.h3, color = MotoStockDs.colors.onSurface)
                     Text(
                         "Ver todas →",
                         style = MotoStockDs.typography.labelMedium,
-                        color = MotoStockDs.colors.secondary,
+                        color = MotoStockDs.colors.primary,
                         modifier = Modifier.clickable { navController.navigate("citas_trabajador") }
                     )
                 }
@@ -303,7 +303,10 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = MotoStockDs.shapes.small,
                                 contentPadding = PaddingValues(vertical = 10.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MotoStockDs.colors.primary)
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MotoStockDs.colors.surfaceContainerHighest,
+                                    contentColor = MotoStockDs.colors.onSurface
+                                )
                             ) {
                                 Text("Gestionar Citas", style = MotoStockDs.typography.labelMedium)
                             }
